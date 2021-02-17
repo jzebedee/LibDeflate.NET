@@ -63,6 +63,18 @@ namespace LibDeflate.Tests
             throw new InvalidOperationException("Could not read zlib header magic");
         }
 
+        private static ReadOnlySpan<byte> GzipInflate(ReadOnlySpan<byte> input)
+        {
+            using var ms = CopySpanToMemoryStream(input);
+            using (var inflateStream = new GZipStream(ms, CompressionMode.Decompress, true))
+            {
+                var buf = new byte[512];
+                var bytesRead = inflateStream.Read(buf);
+
+                return new ReadOnlySpan<byte>(buf, 0, bytesRead);
+            }
+        }
+
         [Theory]
         [MemberData(nameof(CompressionLevels))]
         public void AllocAndFreeCompressorTest(int compressionLevel)
@@ -139,6 +151,37 @@ namespace LibDeflate.Tests
             //this should deflate to a larger size than the input
             const int inBytes = 10;
             var bound = Imports.Compression.libdeflate_zlib_compress_bound(IntPtr.Zero, (UIntPtr)inBytes);
+            Assert.True((int)bound > inBytes);
+        }
+
+        [Theory]
+        [MemberData(nameof(CompressionLevels))]
+        public void GzipCompressTest(int compressionLevel)
+        {
+            var compressor = Imports.Compression.libdeflate_alloc_compressor(compressionLevel);
+            try
+            {
+                const string expected = "Hello world!";
+                ReadOnlySpan<byte> testBytes = Encoding.UTF8.GetBytes(expected);
+                Span<byte> outputBuffer = stackalloc byte[512];
+                var numBytesCompressed = Imports.Compression.libdeflate_gzip_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
+
+                var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
+                var actual = Encoding.UTF8.GetString(GzipInflate(compressedBuffer));
+                Assert.Equal(expected, actual);
+            }
+            finally
+            {
+                Imports.Compression.libdeflate_free_compressor(compressor);
+            }
+        }
+
+        [Fact]
+        public void GzipCompressBoundTest()
+        {
+            //this should deflate to a larger size than the input
+            const int inBytes = 10;
+            var bound = Imports.Compression.libdeflate_gzip_compress_bound(IntPtr.Zero, (UIntPtr)inBytes);
             Assert.True((int)bound > inBytes);
         }
     }
