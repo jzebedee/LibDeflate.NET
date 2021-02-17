@@ -43,10 +43,17 @@ namespace LibDeflate.Tests
 
         [Theory]
         [MemberData(nameof(CompressionLevels))]
-        public void AllocCompressorTest(int compressionLevel)
+        public void AllocAndFreeCompressorTest(int compressionLevel)
         {
             var compressor = Imports.Compression.libdeflate_alloc_compressor(compressionLevel);
-            Assert.NotEqual(compressor, IntPtr.Zero);
+            try
+            {
+                Assert.NotEqual(compressor, IntPtr.Zero);
+            }
+            finally
+            {
+                Imports.Compression.libdeflate_free_compressor(compressor);
+            }
         }
 
         [Theory]
@@ -54,15 +61,21 @@ namespace LibDeflate.Tests
         public void DeflateCompressTest(int compressionLevel)
         {
             var compressor = Imports.Compression.libdeflate_alloc_compressor(compressionLevel);
+            try
+            {
+                const string expected = "Hello world!";
+                ReadOnlySpan<byte> testBytes = Encoding.UTF8.GetBytes(expected);
+                Span<byte> outputBuffer = stackalloc byte[512];
+                var numBytesCompressed = Imports.Compression.libdeflate_deflate_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
 
-            const string expected = "Hello world!";
-            ReadOnlySpan<byte> testBytes = Encoding.UTF8.GetBytes(expected);
-            Span<byte> outputBuffer = stackalloc byte[512];
-            var numBytesCompressed = Imports.Compression.libdeflate_deflate_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
-
-            var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
-            var actual = Encoding.UTF8.GetString(BclInflate(compressedBuffer));
-            Assert.Equal(expected, actual);
+                var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
+                var actual = Encoding.UTF8.GetString(BclInflate(compressedBuffer));
+                Assert.Equal(expected, actual);
+            }
+            finally
+            {
+                Imports.Compression.libdeflate_free_compressor(compressor);
+            }
         }
 
         [Fact]
