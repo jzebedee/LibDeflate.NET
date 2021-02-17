@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LibDeflate.Imports
 {
-    public struct libdeflate_compressor { }
+    using libdeflate_compressor = System.IntPtr;
 
     public static class Compression
     {
@@ -30,7 +30,7 @@ namespace LibDeflate.Imports
          * However, different threads may use different compressors concurrently.
          */
         [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
-        public static extern ref libdeflate_compressor libdeflate_alloc_compressor(int compression_level);
+        public static extern libdeflate_compressor libdeflate_alloc_compressor(int compression_level);
 
         /*
          * libdeflate_deflate_compress() performs raw DEFLATE compression on a buffer of
@@ -40,6 +40,6 @@ namespace LibDeflate.Imports
          * could not be compressed to 'out_nbytes_avail' bytes or fewer.
          */
         [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
-        public static extern libdeflate_compressor libdeflate_deflate_compress(ref libdeflate_compressor compressor, IntPtr @in, UIntPtr in_nbytes, IntPtr @out, UIntPtr out_nbytes_avail);
+        public static extern UIntPtr libdeflate_deflate_compress(libdeflate_compressor compressor, in byte @in, UIntPtr in_nbytes, ref byte @out, UIntPtr out_nbytes_avail);
     }
 }
