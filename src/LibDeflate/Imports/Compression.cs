@@ -41,5 +41,34 @@ namespace LibDeflate.Imports
          */
         [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
         public static extern UIntPtr libdeflate_deflate_compress(libdeflate_compressor compressor, in byte @in, UIntPtr in_nbytes, ref byte @out, UIntPtr out_nbytes_avail);
+
+
+        /*
+         * libdeflate_deflate_compress_bound() returns a worst-case upper bound on the
+         * number of bytes of compressed data that may be produced by compressing any
+         * buffer of length less than or equal to 'in_nbytes' using
+         * libdeflate_deflate_compress() with the specified compressor.  Mathematically,
+         * this bound will necessarily be a number greater than or equal to 'in_nbytes'.
+         * It may be an overestimate of the true upper bound.  The return value is
+         * guaranteed to be the same for all invocations with the same compressor and
+         * same 'in_nbytes'.
+         *
+         * As a special case, 'compressor' may be NULL.  This causes the bound to be
+         * taken across *any* libdeflate_compressor that could ever be allocated with
+         * this build of the library, with any options.
+         *
+         * Note that this function is not necessary in many applications.  With
+         * block-based compression, it is usually preferable to separately store the
+         * uncompressed size of each block and to store any blocks that did not compress
+         * to less than their original size uncompressed.  In that scenario, there is no
+         * need to know the worst-case compressed size, since the maximum number of
+         * bytes of compressed data that may be used would always be one less than the
+         * input length.  You can just pass a buffer of that size to
+         * libdeflate_deflate_compress() and store the data uncompressed if
+         * libdeflate_deflate_compress() returns 0, indicating that the compressed data
+         * did not fit into the provided output buffer.
+         */
+        [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
+        public static extern UIntPtr libdeflate_deflate_compress_bound(libdeflate_compressor compressor, UIntPtr in_nbytes);
     }
 }

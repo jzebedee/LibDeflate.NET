@@ -32,7 +32,7 @@ namespace LibDeflate.Tests
             ms.Write(input);
             ms.Seek(0, SeekOrigin.Begin);
 
-            using(var inflateStream = new DeflateStream(ms, CompressionMode.Decompress, true))
+            using (var inflateStream = new DeflateStream(ms, CompressionMode.Decompress, true))
             {
                 var buf = new byte[512];
                 var bytesRead = inflateStream.Read(buf);
@@ -49,10 +49,11 @@ namespace LibDeflate.Tests
             Assert.NotEqual(compressor, IntPtr.Zero);
         }
 
-        [Fact]
-        public void DeflateCompressTest()
+        [Theory]
+        [MemberData(nameof(CompressionLevels))]
+        public void DeflateCompressTest(int compressionLevel)
         {
-            var compressor = Imports.Compression.libdeflate_alloc_compressor(0);
+            var compressor = Imports.Compression.libdeflate_alloc_compressor(compressionLevel);
 
             const string expected = "Hello world!";
             ReadOnlySpan<byte> testBytes = Encoding.UTF8.GetBytes(expected);
@@ -62,6 +63,15 @@ namespace LibDeflate.Tests
             var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
             var actual = Encoding.UTF8.GetString(BclInflate(compressedBuffer));
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DeflateCompressBoundTest()
+        {
+            //this should deflate to a larger size than the input
+            const int inBytes = 10;
+            var bound = Imports.Compression.libdeflate_deflate_compress_bound(IntPtr.Zero, (UIntPtr)inBytes);
+            Assert.True((int)bound > inBytes);
         }
     }
 }
