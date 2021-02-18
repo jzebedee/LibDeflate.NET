@@ -5,9 +5,11 @@ namespace LibDeflate.Imports
 {
     using size_t = System.UIntPtr;
 
-    public static class CustomMemoryAllocator
+    internal static class CustomMemoryAllocator
     {
+        //[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate IntPtr malloc_func(size_t size);
+        //[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void free_func(IntPtr alloc);
 
         ///<summary>

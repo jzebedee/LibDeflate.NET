@@ -5,7 +5,7 @@ namespace LibDeflate.Imports
     using libdeflate_compressor = System.IntPtr;
     using size_t = System.UIntPtr;
 
-    public static class Compression
+    internal static class Compression
     {
         ///<summary>
         /// libdeflate_alloc_compressor() allocates a new compressor that supports

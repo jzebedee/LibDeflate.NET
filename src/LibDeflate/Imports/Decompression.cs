@@ -5,7 +5,7 @@ namespace LibDeflate.Imports
     using libdeflate_decompressor = System.IntPtr;
     using size_t = System.UIntPtr;
 
-    public static class Decompression
+    internal static class Decompression
     {
         ///<summary>
         /// Result of a call to libdeflate_deflate_decompress(),

@@ -5,7 +5,7 @@ namespace LibDeflate.Imports
 {
     using size_t = System.UIntPtr;
 
-    public static class Checksums
+    internal static class Checksums
     {
         ///<summary>
         /// libdeflate_adler32() updates a running Adler-32 checksum with 'len' bytes of
