@@ -29,9 +29,9 @@ namespace LibDeflate
 
         protected abstract nuint GetBoundCore(nuint inputLength);
 
-        public MemoryOwner<byte>? Compress(ReadOnlySpan<byte> input)
+        public MemoryOwner<byte>? Compress(ReadOnlySpan<byte> input, bool useUpperBound = false)
         {
-            var output = MemoryOwner<byte>.Allocate(input.Length);
+            var output = MemoryOwner<byte>.Allocate(useUpperBound ? GetBound(input.Length) : input.Length);
             try
             {
                 nuint bytesWritten = CompressCore(input, output.Span);
