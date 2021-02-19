@@ -27,6 +27,8 @@ namespace LibDeflate
 
         protected abstract nuint CompressCore(ReadOnlySpan<byte> input, Span<byte> output);
 
+        protected abstract nuint GetBoundCore(nuint inputLength);
+
         public MemoryOwner<byte>? Compress(ReadOnlySpan<byte> input)
         {
             var output = MemoryOwner<byte>.Allocate(input.Length);
@@ -48,6 +50,8 @@ namespace LibDeflate
             }
         }
         public int Compress(ReadOnlySpan<byte> input, Span<byte> output) => (int)CompressCore(input, output);
+
+        public int GetBound(int inputLength) => (int)GetBoundCore((nuint)inputLength);
 
         private void DisposeCore()
         {
