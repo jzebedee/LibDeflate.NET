@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -9,70 +8,11 @@ using Xunit;
 
 namespace LibDeflate.Tests.ImportTests
 {
+    using static BclCompressionHelper;
+
     public class CompressionTests
     {
         public static IEnumerable<object[]> CompressionLevels => Enumerable.Range(0, 13).Select(i => new object[] { i });
-
-        private static MemoryStream CopySpanToMemoryStream(ReadOnlySpan<byte> input)
-        {
-            var ms = new MemoryStream();
-            ms.Write(input);
-            ms.Seek(0, SeekOrigin.Begin);
-            return ms;
-        }
-
-        private static ReadOnlySpan<byte> BclInflate(ReadOnlySpan<byte> input)
-        {
-            using var ms = CopySpanToMemoryStream(input);
-            using (var inflateStream = new DeflateStream(ms, CompressionMode.Decompress, true))
-            {
-                var buf = new byte[512];
-                var bytesRead = inflateStream.Read(buf);
-
-                return new ReadOnlySpan<byte>(buf, 0, bytesRead);
-            }
-        }
-
-        private static ReadOnlySpan<byte> ZlibInflate(ReadOnlySpan<byte> input)
-        {
-            const ushort ZlibMagicNoCompression = 0x0178;
-            const ushort ZlibMagicDefaultCompression = 0x9C78;
-            const ushort ZlibMagicMaximumCompression = 0xDA78;
-
-            using var ms = CopySpanToMemoryStream(input);
-
-            //currently no zlibstream support in the BCL, so hack it
-            ushort magic = default;
-            Span<byte> magicSpan = MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref magic, 1));
-            if (ms.Read(magicSpan) == sizeof(ushort) && magic switch
-            {
-                ZlibMagicNoCompression => true,
-                ZlibMagicDefaultCompression => true,
-                ZlibMagicMaximumCompression => true,
-                _ => false
-            })
-            {
-                using var inflateStream = new DeflateStream(ms, CompressionMode.Decompress, true);
-                var buf = new byte[512];
-                var bytesRead = inflateStream.Read(buf);
-
-                return new ReadOnlySpan<byte>(buf, 0, bytesRead);
-            }
-
-            throw new InvalidOperationException("Could not read zlib header magic");
-        }
-
-        private static ReadOnlySpan<byte> GzipInflate(ReadOnlySpan<byte> input)
-        {
-            using var ms = CopySpanToMemoryStream(input);
-            using (var inflateStream = new GZipStream(ms, CompressionMode.Decompress, true))
-            {
-                var buf = new byte[512];
-                var bytesRead = inflateStream.Read(buf);
-
-                return new ReadOnlySpan<byte>(buf, 0, bytesRead);
-            }
-        }
 
         [Theory]
         [MemberData(nameof(CompressionLevels))]
@@ -102,7 +42,7 @@ namespace LibDeflate.Tests.ImportTests
                 var numBytesCompressed = Imports.Compression.libdeflate_deflate_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
 
                 var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
-                var actual = Encoding.UTF8.GetString(BclInflate(compressedBuffer));
+                var actual = Encoding.UTF8.GetString(FlateToBuffer(compressedBuffer, CompressionMode.Decompress).Span);
                 Assert.Equal(expected, actual);
             }
             finally
@@ -135,7 +75,7 @@ namespace LibDeflate.Tests.ImportTests
                 var numBytesCompressed = Imports.Compression.libdeflate_zlib_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
 
                 var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
-                var actual = Encoding.UTF8.GetString(ZlibInflate(compressedBuffer));
+                var actual = Encoding.UTF8.GetString(ZlibToBuffer(compressedBuffer, CompressionMode.Decompress).Span);
                 Assert.Equal(expected, actual);
             }
             finally
@@ -166,7 +106,7 @@ namespace LibDeflate.Tests.ImportTests
                 var numBytesCompressed = Imports.Compression.libdeflate_gzip_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
 
                 var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
-                var actual = Encoding.UTF8.GetString(GzipInflate(compressedBuffer));
+                var actual = Encoding.UTF8.GetString(GzipToBuffer(compressedBuffer, CompressionMode.Decompress).Span);
                 Assert.Equal(expected, actual);
             }
             finally
