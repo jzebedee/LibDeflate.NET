@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Xunit;
@@ -7,8 +9,19 @@ namespace LibDeflate.Tests
 {
     public class DecompressorTests
     {
-        [Fact]
-        public void DeflateDecompressProvidedBufferTest()
+        public static IEnumerable<object[]> Decompressors
+        {
+            get
+            {
+                yield return new[] { new DeflateDecompressor() };
+                //yield return new[] { new ZlibDecompressor() };
+                //yield return new[] { new GzipDecompressor() };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(Decompressors))]
+        public void DecompressProvidedBufferTest(Decompressor decompressor)
         {
             Span<byte> input = new byte[0x79000];
             var rand = new Random();
@@ -24,15 +37,18 @@ namespace LibDeflate.Tests
             var deflatedInput = ms.GetBuffer()[..(int)ms.Length];
             var inflatedOutput = new byte[input.Length];
 
-            using var decompressor = new DeflateDecompressor();
-            var status = decompressor.Decompress(deflatedInput, inflatedOutput, out var bytesWritten);
+            using (decompressor)
+            {
+                var status = decompressor.Decompress(deflatedInput, inflatedOutput, out var bytesWritten);
 
-            var outSpan = new ReadOnlySpan<byte>(inflatedOutput, 0, (int)bytesWritten);
-            Assert.True(input.SequenceEqual(outSpan));
+                var outSpan = new ReadOnlySpan<byte>(inflatedOutput, 0, bytesWritten);
+                Assert.True(input.SequenceEqual(outSpan));
+            }
         }
 
-        [Fact]
-        public void DeflateDecompressOversizedInputTest()
+        [Theory]
+        [MemberData(nameof(Decompressors))]
+        public void DecompressOversizedInputTest(Decompressor decompressor)
         {
             Span<byte> input = new byte[0x40000];
             var rand = new Random();
@@ -53,12 +69,14 @@ namespace LibDeflate.Tests
             var deflatedInput = ms.GetBuffer()[..(int)ms.Length];
             var inflatedOutput = new byte[input.Length];
 
-            using var decompressor = new DeflateDecompressor();
-            var status = decompressor.Decompress(deflatedInput, inflatedOutput, out var bytesWritten, out var bytesRead);
+            using (decompressor)
+            {
+                var status = decompressor.Decompress(deflatedInput, inflatedOutput, out var bytesWritten, out var bytesRead);
 
-            var outSpan = new ReadOnlySpan<byte>(inflatedOutput, 0, (int)bytesWritten);
-            Assert.True(input.SequenceEqual(outSpan));
-            Assert.Equal(expectedReadLength, bytesRead);
+                var outSpan = new ReadOnlySpan<byte>(inflatedOutput, 0, (int)bytesWritten);
+                Assert.True(input.SequenceEqual(outSpan));
+                Assert.Equal(expectedReadLength, bytesRead);
+            }
         }
     }
 }
