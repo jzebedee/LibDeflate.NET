@@ -5,7 +5,7 @@ using Xunit;
 
 namespace LibDeflate.Tests
 {
-    public class DeflateTests
+    public class CompressorTests
     {
         [Fact]
         public void DeflateDecompressProvidedBufferTest()

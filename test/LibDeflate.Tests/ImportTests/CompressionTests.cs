@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Xunit;
 
-namespace LibDeflate.Tests
+namespace LibDeflate.Tests.ImportTests
 {
     public class CompressionTests
     {
