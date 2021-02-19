@@ -23,7 +23,7 @@ namespace LibDeflate.Tests
         [MemberData(nameof(Decompressors))]
         public void DecompressProvidedBufferTest(Decompressor decompressor)
         {
-            Span<byte> input = new byte[0x79000];
+            Span<byte> input = new byte[0x7900];
             var rand = new Random();
             rand.NextBytes(input);
 
@@ -50,7 +50,7 @@ namespace LibDeflate.Tests
         [MemberData(nameof(Decompressors))]
         public void DecompressOversizedInputTest(Decompressor decompressor)
         {
-            Span<byte> input = new byte[0x40000];
+            Span<byte> input = new byte[0x4000];
             var rand = new Random();
             rand.NextBytes(input);
 
@@ -62,7 +62,7 @@ namespace LibDeflate.Tests
             }
 
             var expectedReadLength = ms.Length;
-            Span<byte> appendedGarbage = new byte[0x400];
+            Span<byte> appendedGarbage = new byte[0x40];
             rand.NextBytes(appendedGarbage);
             ms.Write(appendedGarbage);
 
