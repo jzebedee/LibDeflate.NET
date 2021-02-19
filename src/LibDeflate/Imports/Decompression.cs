@@ -11,7 +11,7 @@ namespace LibDeflate.Imports
         /// Result of a call to libdeflate_deflate_decompress(),
         /// libdeflate_zlib_decompress(), or libdeflate_gzip_decompress().
         ///</summary>
-        public enum OperationStatus
+        public enum libdeflate_result
         {
             ///<summary>
             /// Decompression was successful.
@@ -84,7 +84,7 @@ namespace LibDeflate.Imports
         ///     nonzero result code if decompression failed for another reason.
         ///</summary>
         [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
-        public static extern OperationStatus libdeflate_deflate_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, ref size_t actual_out_nbytes_ret);
+        public static extern libdeflate_result libdeflate_deflate_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
 
         ///<summary>
         /// Like libdeflate_deflate_decompress(), but adds the 'actual_in_nbytes_ret'
@@ -93,7 +93,7 @@ namespace LibDeflate.Imports
         /// byte boundary) is written to *actual_in_nbytes_ret.
         ///</summary>
         [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
-        public static extern OperationStatus libdeflate_deflate_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, ref size_t actual_in_nbytes_ret, ref size_t actual_out_nbytes_ret);
+        public static extern libdeflate_result libdeflate_deflate_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
 
         ///<summary>
         /// Like libdeflate_deflate_decompress(), but assumes the zlib wrapper format
@@ -104,7 +104,7 @@ namespace LibDeflate.Imports
         /// use libdeflate_zlib_decompress_ex().
         ///</summary>
         [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
-        public static extern OperationStatus libdeflate_zlib_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, ref size_t actual_out_nbytes_ret);
+        public static extern libdeflate_result libdeflate_zlib_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, ref size_t actual_out_nbytes_ret);
 
         ///<summary>
         /// Like libdeflate_deflate_decompress(), but assumes the zlib wrapper format
@@ -115,7 +115,7 @@ namespace LibDeflate.Imports
         /// use libdeflate_zlib_decompress_ex().
         ///</summary>
         [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
-        public static extern OperationStatus libdeflate_zlib_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, ref size_t actual_in_nbytes_ret, ref size_t actual_out_nbytes_ret);
+        public static extern libdeflate_result libdeflate_zlib_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, ref size_t actual_in_nbytes_ret, ref size_t actual_out_nbytes_ret);
 
         ///<summary>
         /// Like libdeflate_deflate_decompress(), but assumes the gzip wrapper format
@@ -126,7 +126,7 @@ namespace LibDeflate.Imports
         /// multi-member support.
         ///</summary>
         [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
-        public static extern OperationStatus libdeflate_gzip_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, ref size_t actual_out_nbytes_ret);
+        public static extern libdeflate_result libdeflate_gzip_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, ref size_t actual_out_nbytes_ret);
 
         ///<summary>
         /// Like libdeflate_gzip_decompress(), but adds the 'actual_in_nbytes_ret'
@@ -136,7 +136,7 @@ namespace LibDeflate.Imports
         /// written to *actual_in_nbytes_ret.
         ///</summary>
         [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
-        public static extern OperationStatus libdeflate_gzip_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, ref size_t actual_in_nbytes_ret, ref size_t actual_out_nbytes_ret);
+        public static extern libdeflate_result libdeflate_gzip_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, ref size_t actual_in_nbytes_ret, ref size_t actual_out_nbytes_ret);
 
         ///<summary>
         /// libdeflate_free_decompressor() frees a decompressor that was allocated with
