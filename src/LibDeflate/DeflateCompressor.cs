@@ -10,7 +10,7 @@ namespace LibDeflate
         {
         }
 
-        protected override nuint Compress(ReadOnlySpan<byte> input, Span<byte> output)
+        protected override nuint CompressCore(ReadOnlySpan<byte> input, Span<byte> output)
             => Compression.libdeflate_deflate_compress(compressor, MemoryMarshal.GetReference(input), (nuint)input.Length, ref MemoryMarshal.GetReference(output), (nuint)output.Length);
     }
 }

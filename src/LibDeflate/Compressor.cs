@@ -1,9 +1,11 @@
 ﻿using LibDeflate.Imports;
+using Microsoft.Toolkit.HighPerformance.Buffers;
 using System;
-using System.Buffers;
 
 namespace LibDeflate
 {
+    using static Compression;
+
     public abstract class Compressor : IDisposable
     {
         protected readonly IntPtr compressor;
@@ -15,7 +17,7 @@ namespace LibDeflate
             if (compressionLevel < 0 || compressionLevel > 12)
                 throw new ArgumentOutOfRangeException(nameof(compressionLevel));
 
-            var compressor = Compression.libdeflate_alloc_compressor(compressionLevel);
+            var compressor = libdeflate_alloc_compressor(compressionLevel);
             if (compressor == IntPtr.Zero)
                 throw new InvalidOperationException("Failed to allocate compressor");
 
@@ -23,32 +25,35 @@ namespace LibDeflate
         }
         ~Compressor() => DisposeCore();
 
-        protected abstract nuint Compress(ReadOnlySpan<byte> input, Span<byte> output);
+        protected abstract nuint CompressCore(ReadOnlySpan<byte> input, Span<byte> output);
 
-        public bool TryCompress(ReadOnlySpan<byte> input, out IMemoryOwner<byte> output, out uint bytesWritten)
+        public MemoryOwner<byte>? Compress(ReadOnlySpan<byte> input)
         {
-            var outputOwner = MemoryPool<byte>.Shared.Rent(input.Length);
-            var outputBuffer = outputOwner.Memory.Span;
-
-            nuint outputWritten = Compress(input, outputBuffer);
-            if (outputWritten == UIntPtr.Zero)
+            var output = MemoryOwner<byte>.Allocate(input.Length);
+            try
             {
-                outputOwner.Dispose();
-                output = null;
-                bytesWritten = 0;
-                return false;
-            }
+                nuint bytesWritten = CompressCore(input, output.Span);
+                if (bytesWritten == UIntPtr.Zero)
+                {
+                    output.Dispose();
+                    return null;
+                }
 
-            output = outputOwner;
-            bytesWritten = (uint)outputWritten;
-            return true;
+                return output.Slice(0, (int)bytesWritten);
+            }
+            catch
+            {
+                output?.Dispose();
+                throw;
+            }
         }
+        public int Compress(ReadOnlySpan<byte> input, Span<byte> output) => (int)CompressCore(input, output);
 
         private void DisposeCore()
         {
             if (!disposedValue)
             {
-                Compression.libdeflate_free_compressor(compressor);
+                libdeflate_free_compressor(compressor);
                 disposedValue = true;
             }
         }
