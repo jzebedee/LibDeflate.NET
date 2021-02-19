@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31004.235
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibDeflate", "src\LibDeflate\LibDeflate.csproj", "{8146F335-F7EB-431F-97FA-8E055ADBC87C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibDeflate", "src\LibDeflate\LibDeflate.csproj", "{8146F335-F7EB-431F-97FA-8E055ADBC87C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibDeflate.Tests", "test\LibDeflate.Tests\LibDeflate.Tests.csproj", "{99A0514A-4F2D-48C7-9430-9F8E8C7BA04D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibDeflate.Tests", "test\LibDeflate.Tests\LibDeflate.Tests.csproj", "{99A0514A-4F2D-48C7-9430-9F8E8C7BA04D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibDeflate.DangerousTests", "test\LibDeflate.DangerousTests\LibDeflate.DangerousTests.csproj", "{D655D50E-0159-424B-A24D-C15952BB02DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{99A0514A-4F2D-48C7-9430-9F8E8C7BA04D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99A0514A-4F2D-48C7-9430-9F8E8C7BA04D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99A0514A-4F2D-48C7-9430-9F8E8C7BA04D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D655D50E-0159-424B-A24D-C15952BB02DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D655D50E-0159-424B-A24D-C15952BB02DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D655D50E-0159-424B-A24D-C15952BB02DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D655D50E-0159-424B-A24D-C15952BB02DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
