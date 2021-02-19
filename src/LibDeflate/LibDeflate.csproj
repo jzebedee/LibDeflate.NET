@@ -6,16 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="libdeflate-1.7-windows-x86_64-bin\libdeflate.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="libdeflate-1.7-windows-x86_64-bin\libdeflate.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="6.1.1" />
   </ItemGroup>
 
