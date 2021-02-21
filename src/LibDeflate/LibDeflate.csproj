@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LibDeflate.Native" Version="1.7.0" />
+    <PackageReference Include="LibDeflate.Native" Version="1.7.1" />
     <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="6.1.1" />
   </ItemGroup>
 
