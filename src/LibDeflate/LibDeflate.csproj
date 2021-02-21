@@ -1,9 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>preview</LangVersion>
     <AssemblyName>LibDeflate.NET</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.7.0</Version>
+    <Authors>jzebedee</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/jzebedee/LibDeflate</PackageProjectUrl>
+    <PackageTags>libdeflate.net libdeflate deflate zlib gzip gz</PackageTags>
+    <Description>LibDeflate.NET is a managed wrapper around libdeflate, a native library for fast, whole-buffer DEFLATE-based compression and decompression.</Description>
   </PropertyGroup>
 
   <ItemGroup>
