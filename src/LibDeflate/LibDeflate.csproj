@@ -3,9 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>preview</LangVersion>
+    <AssemblyName>LibDeflate.NET</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LibDeflate.Native" Version="1.7.0" />
     <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="6.1.1" />
   </ItemGroup>
 
