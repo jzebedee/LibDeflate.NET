@@ -11,11 +11,21 @@
     <PackageProjectUrl>https://github.com/jzebedee/LibDeflate</PackageProjectUrl>
     <PackageTags>libdeflate.net libdeflate deflate zlib gzip gz</PackageTags>
     <Description>LibDeflate.NET is a managed wrapper around libdeflate, a native library for fast, whole-buffer DEFLATE-based compression and decompression.</Description>
+
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="LibDeflate.Native" Version="1.7.1" />
     <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="6.1.1" />
+
+    <!-- Sourcelink support -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
