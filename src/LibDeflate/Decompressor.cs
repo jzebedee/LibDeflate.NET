@@ -65,7 +65,7 @@ namespace LibDeflate
             }
             catch
             {
-                output?.Dispose();
+                output.Dispose();
                 throw;
             }
         }
@@ -92,7 +92,7 @@ namespace LibDeflate
             }
             catch
             {
-                output?.Dispose();
+                output.Dispose();
                 throw;
             }
         }
