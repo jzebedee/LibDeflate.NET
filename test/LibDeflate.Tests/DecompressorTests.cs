@@ -39,10 +39,22 @@ namespace LibDeflate.Tests
             return input;
         }
 
+        private static byte[] GetOversizedInputBuffer(ReadOnlySpan<byte> input, out int expectedReadLength)
+        {
+            var oversizedMs = new MemoryStream();
+            oversizedMs.Write(input);
+
+            expectedReadLength = (int)oversizedMs.Length;
+            Span<byte> appendedGarbage = new byte[0x40];
+            _rand.NextBytes(appendedGarbage);
+            oversizedMs.Write(appendedGarbage);
+
+            return oversizedMs.GetBuffer()[..(int)oversizedMs.Length];
+        }
 
         [Theory]
         [MemberData(nameof(Decompressors))]
-        public void DecompressProvidedBufferTest(Decompressor decompressor, ReadOnlyMemory<byte> inputMemory, BclDeflater bclDeflater)
+        public void DecompressOwnedBufferTest(Decompressor decompressor, ReadOnlyMemory<byte> inputMemory, BclDeflater bclDeflater)
         {
             using (decompressor)
             {
@@ -67,26 +79,74 @@ namespace LibDeflate.Tests
 
         [Theory]
         [MemberData(nameof(Decompressors))]
+        public void DecompressProvidedBufferTest(Decompressor decompressor, ReadOnlyMemory<byte> inputMemory, BclDeflater bclDeflater)
+        {
+            using (decompressor)
+            {
+                //compress with BCL
+                var bclDeflated = bclDeflater(inputMemory);
+
+                Span<byte> outputSpan = new byte[inputMemory.Length + 0x1000];
+
+                //decompress result with our lib
+                var status = decompressor.Decompress(bclDeflated.Span, outputSpan, out int bytesWritten);
+                Assert.Equal(OperationStatus.Done, status);
+                Assert.True(bytesWritten > 0);
+
+                //ensure inflated results match input
+                Assert.True(outputSpan[..bytesWritten].SequenceEqual(inputMemory.Span));
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(Decompressors))]
+        public void DecompressOwnedShortBufferTest(Decompressor decompressor, ReadOnlyMemory<byte> inputMemory, BclDeflater bclDeflater)
+        {
+            using (decompressor)
+            {
+                //compress with BCL
+                var bclDeflated = bclDeflater(inputMemory);
+
+                //decompress result with our lib
+                var status = decompressor.Decompress(bclDeflated.Span, inputMemory.Length - 1, out var outputOwner);
+                Assert.NotEqual(OperationStatus.Done, status);
+                Assert.Null(outputOwner);
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(Decompressors))]
         public void DecompressOversizedInputTest(Decompressor decompressor, ReadOnlyMemory<byte> inputMemory, BclDeflater bclDeflater)
         {
-            var oversizedMs = new MemoryStream();
             var bclDeflated = bclDeflater(inputMemory);
-            oversizedMs.Write(bclDeflated.Span);
-
-            var expectedReadLength = oversizedMs.Length;
-            Span<byte> appendedGarbage = new byte[0x40];
-            _rand.NextBytes(appendedGarbage);
-            oversizedMs.Write(appendedGarbage);
-
-            var deflatedInput = oversizedMs.GetBuffer()[..(int)oversizedMs.Length];
+            var deflatedInput = GetOversizedInputBuffer(bclDeflated.Span, out var expectedReadLength);
             var inflatedOutput = new byte[inputMemory.Length];
 
             using (decompressor)
             {
-                var status = decompressor.Decompress(deflatedInput, inflatedOutput, out var bytesWritten, out var bytesRead);
+                var status = decompressor.Decompress(deflatedInput, inflatedOutput, out var bytesWritten, out int bytesRead);
+                Assert.Equal(OperationStatus.Done, status);
 
                 var outSpan = new ReadOnlySpan<byte>(inflatedOutput, 0, bytesWritten);
                 Assert.True(inputMemory.Span.SequenceEqual(outSpan));
+                Assert.Equal(expectedReadLength, bytesRead);
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(Decompressors))]
+        public void DecompressOversizedInputUnknownSizeTest(Decompressor decompressor, ReadOnlyMemory<byte> inputMemory, BclDeflater bclDeflater)
+        {
+            var bclDeflated = bclDeflater(inputMemory);
+            var deflatedInput = GetOversizedInputBuffer(bclDeflated.Span, out var expectedReadLength);
+
+            using (decompressor)
+            {
+                var status = decompressor.Decompress(deflatedInput, inputMemory.Length, out var outputOwner, out int bytesRead);
+                Assert.Equal(OperationStatus.Done, status);
+                Assert.NotNull(outputOwner);
+
+                Assert.True(inputMemory.Span.SequenceEqual(outputOwner.Span));
                 Assert.Equal(expectedReadLength, bytesRead);
             }
         }
