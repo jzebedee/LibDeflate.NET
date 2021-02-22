@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using Xunit;
 
@@ -9,72 +11,82 @@ namespace LibDeflate.Tests
 {
     public class DecompressorTests
     {
-        public static IEnumerable<object[]> Decompressors
+        public delegate ReadOnlyMemory<byte> BclDeflater(ReadOnlyMemory<byte> inflatedInput);
+
+        public static IEnumerable<object[]> Decompressors()
         {
-            get
-            {
-                yield return new[] { new DeflateDecompressor() };
-                //yield return new[] { new ZlibDecompressor() };
-                //yield return new[] { new GzipDecompressor() };
-            }
+            var input = GetRandomBuffer(length: 0x7900);
+
+            yield return new object[] { new DeflateDecompressor(), input, (BclDeflater)Deflate };
+            yield return new object[] { new ZlibDecompressor(), input, (BclDeflater)ZlibDeflate };
+            yield return new object[] { new GzipDecompressor(), input, (BclDeflater)GzipDeflate };
+
+            static ReadOnlyMemory<byte> Deflate(ReadOnlyMemory<byte> inflatedInput)
+                => BclCompressionHelper.FlateToBuffer(inflatedInput.Span, CompressionMode.Compress);
+
+            static ReadOnlyMemory<byte> ZlibDeflate(ReadOnlyMemory<byte> inflatedInput)
+                => BclCompressionHelper.ZlibToBuffer(inflatedInput.Span, CompressionMode.Compress);
+
+            static ReadOnlyMemory<byte> GzipDeflate(ReadOnlyMemory<byte> inflatedInput)
+                => BclCompressionHelper.GzipToBuffer(inflatedInput.Span, CompressionMode.Compress);
         }
+
+        private static readonly Random _rand = new();
+        private static byte[] GetRandomBuffer(int length)
+        {
+            var input = new byte[length];
+            _rand.NextBytes(input);
+            return input;
+        }
+
 
         [Theory]
         [MemberData(nameof(Decompressors))]
-        public void DecompressProvidedBufferTest(Decompressor decompressor)
+        public void DecompressProvidedBufferTest(Decompressor decompressor, ReadOnlyMemory<byte> inputMemory, BclDeflater bclDeflater)
         {
-            Span<byte> input = new byte[0x7900];
-            var rand = new Random();
-            rand.NextBytes(input);
-
-            using var ms = new MemoryStream();
-            {
-                using var ds = new System.IO.Compression.DeflateStream(ms, System.IO.Compression.CompressionLevel.Optimal, true);
-                ds.Write(input);
-                ds.Flush();
-            }
-
-            var deflatedInput = ms.GetBuffer()[..(int)ms.Length];
-            var inflatedOutput = new byte[input.Length];
-
             using (decompressor)
             {
-                var status = decompressor.Decompress(deflatedInput, inflatedOutput, out var bytesWritten);
+                //compress with BCL
+                var bclDeflated = bclDeflater(inputMemory);
+                //sanity-check
+                //if (decompressor is ZlibDecompressor)
+                //{
+                //    var bclRoundtrip = BclCompressionHelper.ZlibToBuffer(bclDeflated.Span, CompressionMode.Decompress).Span;
+                //    Assert.True(bclRoundtrip.SequenceEqual(inputMemory.Span));
+                //}
 
-                var outSpan = new ReadOnlySpan<byte>(inflatedOutput, 0, bytesWritten);
-                Assert.True(input.SequenceEqual(outSpan));
+                //decompress result with our lib
+                var status = decompressor.Decompress(bclDeflated.Span, inputMemory.Length, out var outputOwner);
+                Assert.Equal(OperationStatus.Done, status);
+                Assert.NotNull(outputOwner);
+
+                //ensure inflated results match input
+                Assert.True(outputOwner.Span.SequenceEqual(inputMemory.Span));
             }
         }
 
         [Theory]
         [MemberData(nameof(Decompressors))]
-        public void DecompressOversizedInputTest(Decompressor decompressor)
+        public void DecompressOversizedInputTest(Decompressor decompressor, ReadOnlyMemory<byte> inputMemory, BclDeflater bclDeflater)
         {
-            Span<byte> input = new byte[0x4000];
-            var rand = new Random();
-            rand.NextBytes(input);
+            var oversizedMs = new MemoryStream();
+            var bclDeflated = bclDeflater(inputMemory);
+            oversizedMs.Write(bclDeflated.Span);
 
-            using var ms = new MemoryStream();
-            {
-                using var ds = new System.IO.Compression.DeflateStream(ms, System.IO.Compression.CompressionLevel.Optimal, true);
-                ds.Write(input);
-                ds.Flush();
-            }
-
-            var expectedReadLength = ms.Length;
+            var expectedReadLength = oversizedMs.Length;
             Span<byte> appendedGarbage = new byte[0x40];
-            rand.NextBytes(appendedGarbage);
-            ms.Write(appendedGarbage);
+            _rand.NextBytes(appendedGarbage);
+            oversizedMs.Write(appendedGarbage);
 
-            var deflatedInput = ms.GetBuffer()[..(int)ms.Length];
-            var inflatedOutput = new byte[input.Length];
+            var deflatedInput = oversizedMs.GetBuffer()[..(int)oversizedMs.Length];
+            var inflatedOutput = new byte[inputMemory.Length];
 
             using (decompressor)
             {
                 var status = decompressor.Decompress(deflatedInput, inflatedOutput, out var bytesWritten, out var bytesRead);
 
-                var outSpan = new ReadOnlySpan<byte>(inflatedOutput, 0, (int)bytesWritten);
-                Assert.True(input.SequenceEqual(outSpan));
+                var outSpan = new ReadOnlySpan<byte>(inflatedOutput, 0, bytesWritten);
+                Assert.True(inputMemory.Span.SequenceEqual(outSpan));
                 Assert.Equal(expectedReadLength, bytesRead);
             }
         }
