@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SixLabors.ZlibStream;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
@@ -19,50 +20,74 @@ namespace LibDeflate.Tests
         {
             var outputMs = new MemoryStream();
 
-            using var inputMs = CopySpanToMemoryStream(input);
-            using var inflateStream = new DeflateStream(inputMs, mode);
-            inflateStream.CopyTo(outputMs);
+            switch (mode)
+            {
+                case CompressionMode.Compress:
+                    using (var flateStream = new DeflateStream(outputMs, mode, true))
+                    {
+                        flateStream.Write(input);
+                        flateStream.Flush();
+                    }
+                    break;
+                case CompressionMode.Decompress:
+                    using (var inputMs = CopySpanToMemoryStream(input))
+                    using (var flateStream = new DeflateStream(inputMs, mode))
+                    {
+                        flateStream.CopyTo(outputMs);
+                    }
+                    break;
+            }
 
             return new ReadOnlyMemory<byte>(outputMs.GetBuffer(), 0, (int)outputMs.Length);
         }
 
         internal static ReadOnlyMemory<byte> ZlibToBuffer(ReadOnlySpan<byte> input, CompressionMode mode)
         {
-            const ushort ZlibMagicNoCompression = 0x0178;
-            const ushort ZlibMagicDefaultCompression = 0x9C78;
-            const ushort ZlibMagicMaximumCompression = 0xDA78;
-
-            using var inputMs = CopySpanToMemoryStream(input);
-
-            //currently no zlibstream support in the BCL, so hack it
-            ushort magic = default;
-            Span<byte> magicSpan = MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref magic, 1));
-            if (inputMs.Read(magicSpan) != sizeof(ushort) || !(magic switch
-            {
-                ZlibMagicNoCompression => true,
-                ZlibMagicDefaultCompression => true,
-                ZlibMagicMaximumCompression => true,
-                _ => false
-            }))
-            {
-                throw new InvalidOperationException("Could not read zlib header magic");
-            }
-
-            using var inflateStream = new DeflateStream(inputMs, mode, true);
-
             var outputMs = new MemoryStream();
-            inflateStream.CopyTo(outputMs);
+
+            switch (mode)
+            {
+                case CompressionMode.Compress:
+                    using (var zlibStream = new ZlibOutputStream(outputMs, SixLabors.ZlibStream.CompressionLevel.DefaultCompression))
+                    {
+                        zlibStream.Write(input);
+                        zlibStream.Flush();
+                    }
+                    break;
+                case CompressionMode.Decompress:
+                    using (var inputMs = CopySpanToMemoryStream(input))
+                    using (var zlibStream = new ZlibInputStream(inputMs))
+                    {
+                        zlibStream.CopyTo(outputMs);
+                    }
+                    break;
+            }
 
             return new ReadOnlyMemory<byte>(outputMs.GetBuffer(), 0, (int)outputMs.Length);
         }
+
 
         internal static ReadOnlyMemory<byte> GzipToBuffer(ReadOnlySpan<byte> input, CompressionMode mode)
         {
             var outputMs = new MemoryStream();
 
-            using var inputMs = CopySpanToMemoryStream(input);
-            using var inflateStream = new GZipStream(inputMs, mode);
-            inflateStream.CopyTo(outputMs);
+            switch (mode)
+            {
+                case CompressionMode.Compress:
+                    using (var flateStream = new GZipStream(outputMs, mode, true))
+                    {
+                        flateStream.Write(input);
+                        flateStream.Flush();
+                    }
+                    break;
+                case CompressionMode.Decompress:
+                    using (var inputMs = CopySpanToMemoryStream(input))
+                    using (var flateStream = new GZipStream(inputMs, mode))
+                    {
+                        flateStream.CopyTo(outputMs);
+                    }
+                    break;
+            }
 
             return new ReadOnlyMemory<byte>(outputMs.GetBuffer(), 0, (int)outputMs.Length);
         }
