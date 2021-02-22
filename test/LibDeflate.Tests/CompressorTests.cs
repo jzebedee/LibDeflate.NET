@@ -39,7 +39,7 @@ namespace LibDeflate.Tests
         [MemberData(nameof(Compressors), 0)]
         [MemberData(nameof(Compressors), 6)]
         [MemberData(nameof(Compressors), 9)]
-        public void CompressAndValidateWithBclTest(Compressor compressor, ReadOnlyMemory<byte> input, BclInflater bclInflater)
+        public void CompressOwnedBufferTest(Compressor compressor, ReadOnlyMemory<byte> input, BclInflater bclInflater)
         {
             using (compressor)
             {
@@ -48,6 +48,41 @@ namespace LibDeflate.Tests
 
                 var bclInflated = bclInflater(outputOwner.Memory);
                 Assert.True(input.Span.SequenceEqual(bclInflated.Span));
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(Compressors), 0)]
+        [MemberData(nameof(Compressors), 6)]
+        [MemberData(nameof(Compressors), 9)]
+        public void CompressProvidedBufferTest(Compressor compressor, ReadOnlyMemory<byte> input, BclInflater bclInflater)
+        {
+            using (compressor)
+            {
+                var outputSpan = new byte[input.Length + 0x1000];
+
+                int bytesWritten = compressor.Compress(input.Span, outputSpan);
+                Assert.True(bytesWritten > 0);
+
+                var bclInflated = bclInflater(outputSpan[..bytesWritten]);
+                Assert.True(input.Span.SequenceEqual(bclInflated.Span));
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(Compressors), 0)]
+        [MemberData(nameof(Compressors), 6)]
+        [MemberData(nameof(Compressors), 9)]
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+        public void CompressProvidedShortBufferTest(Compressor compressor, ReadOnlyMemory<byte> input, BclInflater _)
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+        {
+            using (compressor)
+            {
+                Span<byte> outputSpan = stackalloc byte[1];
+
+                int bytesWritten = compressor.Compress(input.Span, outputSpan);
+                Assert.True(bytesWritten == 0);
             }
         }
     }
