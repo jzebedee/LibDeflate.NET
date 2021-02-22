@@ -23,4 +23,10 @@
     <ProjectReference Include="..\..\src\LibDeflate\LibDeflate.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="SixLabors.ZlibStream">
+      <HintPath>Lib\SixLabors.ZlibStream.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
