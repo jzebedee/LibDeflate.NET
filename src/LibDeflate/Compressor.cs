@@ -1,6 +1,7 @@
-﻿using LibDeflate.Imports;
-using Microsoft.Toolkit.HighPerformance.Buffers;
+﻿using LibDeflate.Buffers;
+using LibDeflate.Imports;
 using System;
+using System.Buffers;
 
 namespace LibDeflate
 {
@@ -29,7 +30,7 @@ namespace LibDeflate
 
         protected abstract nuint GetBoundCore(nuint inputLength);
 
-        public MemoryOwner<byte>? Compress(ReadOnlySpan<byte> input, bool useUpperBound = false)
+        public IMemoryOwner<byte>? Compress(ReadOnlySpan<byte> input, bool useUpperBound = false)
         {
             var output = MemoryOwner<byte>.Allocate(useUpperBound ? GetBound(input.Length) : input.Length);
             try

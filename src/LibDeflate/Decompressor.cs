@@ -1,5 +1,5 @@
-﻿using LibDeflate.Imports;
-using Microsoft.Toolkit.HighPerformance.Buffers;
+﻿using LibDeflate.Buffers;
+using LibDeflate.Imports;
 using System;
 using System.Buffers;
 using System.IO;
@@ -41,7 +41,7 @@ namespace LibDeflate
         protected abstract OperationStatus DecompressCore(ReadOnlySpan<byte> input, Span<byte> output, nuint uncompressedSize, out nuint bytesRead);
         protected abstract OperationStatus DecompressCore(ReadOnlySpan<byte> input, Span<byte> output, out nuint bytesWritten, out nuint bytesRead);
 
-        public OperationStatus Decompress(ReadOnlySpan<byte> input, int uncompressedSize, out MemoryOwner<byte>? outputOwner, out int bytesRead)
+        public OperationStatus Decompress(ReadOnlySpan<byte> input, int uncompressedSize, out IMemoryOwner<byte>? outputOwner, out int bytesRead)
         {
             var output = MemoryOwner<byte>.Allocate(uncompressedSize);
             try
@@ -70,7 +70,7 @@ namespace LibDeflate
             }
         }
 
-        public OperationStatus Decompress(ReadOnlySpan<byte> input, int uncompressedSize, out MemoryOwner<byte>? outputOwner)
+        public OperationStatus Decompress(ReadOnlySpan<byte> input, int uncompressedSize, out IMemoryOwner<byte>? outputOwner)
         {
             var output = MemoryOwner<byte>.Allocate(uncompressedSize);
             try
