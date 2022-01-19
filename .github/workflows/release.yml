@@ -12,8 +12,8 @@ jobs:
       with:
         dotnet-version: '6.0.x' # SDK Version to use.
     - name: Pack
-      run: dotnet pack -c Release --output pkg
+      run: dotnet pack -c Release -o pkg
     - name: Publish the package to GPR
       run: dotnet nuget push pkg/*.nupkg -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/jzebedee/index.json --skip-duplicate
     - name: Publish the package to NuGet
-      run: dotnet nuget push pkg/*.nupkg -k ${{ secrets.DELTAQ_NUGET_TOKEN }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push pkg/*.nupkg -k ${{ secrets.LIBDEFLATE_NUGET_TOKEN }} -s https://api.nuget.org/v3/index.json --skip-duplicate
