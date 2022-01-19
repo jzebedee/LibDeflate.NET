@@ -14,7 +14,7 @@ namespace LibDeflate.Buffers;
 /// An <see cref="IMemoryOwner{T}"/> implementation with an embedded length and a fast <see cref="Span{T}"/> accessor.
 /// </summary>
 /// <typeparam name="T">The type of items to store in the current instance.</typeparam>
-public sealed class MemoryOwner<T> : IMemoryOwner<T>
+internal sealed class MemoryOwner<T> : IMemoryOwner<T>
 {
     /// <summary>
     /// The starting offset within <see cref="array"/>.
@@ -325,24 +325,15 @@ public sealed class MemoryOwner<T> : IMemoryOwner<T>
     /// <summary>
     /// Throws an <see cref="ObjectDisposedException"/> when <see cref="array"/> is <see langword="null"/>.
     /// </summary>
-    private static void ThrowObjectDisposedException()
-    {
-        throw new ObjectDisposedException(nameof(MemoryOwner<T>), "The current buffer has already been disposed");
-    }
+    private static void ThrowObjectDisposedException() => throw new ObjectDisposedException(nameof(MemoryOwner<T>), "The current buffer has already been disposed");
 
     /// <summary>
     /// Throws an <see cref="ArgumentOutOfRangeException"/> when the <see cref="start"/> is invalid.
     /// </summary>
-    private static void ThrowInvalidOffsetException()
-    {
-        throw new ArgumentOutOfRangeException(nameof(start), "The input start parameter was not valid");
-    }
+    private static void ThrowInvalidOffsetException() => throw new ArgumentOutOfRangeException(nameof(start), "The input start parameter was not valid");
 
     /// <summary>
     /// Throws an <see cref="ArgumentOutOfRangeException"/> when the <see cref="length"/> is invalid.
     /// </summary>
-    private static void ThrowInvalidLengthException()
-    {
-        throw new ArgumentOutOfRangeException(nameof(length), "The input length parameter was not valid");
-    }
+    private static void ThrowInvalidLengthException() => throw new ArgumentOutOfRangeException(nameof(length), "The input length parameter was not valid");
 }
