@@ -9,12 +9,14 @@ namespace LibDeflate.Tests
         private static int mallocCount = 0;
         private static int freeCount = 0;
 
+        //[UnmanagedCallersOnly]
         private static nint malloc(nuint len)
         {
             mallocCount++;
             return Marshal.AllocHGlobal((nint)len);
         }
 
+        //[UnmanagedCallersOnly]
         private static void free(nint alloc)
         {
             freeCount++;
