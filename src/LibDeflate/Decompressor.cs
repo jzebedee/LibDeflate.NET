@@ -16,9 +16,13 @@ public abstract class Decompressor : IDisposable
     {
         var decompressor = libdeflate_alloc_decompressor();
         if (decompressor == IntPtr.Zero)
-            throw new InvalidOperationException("Failed to allocate decompressor");
+        {
+            ThrowHelperFailedAllocDecompressor();
+        }
 
         this.decompressor = decompressor;
+
+        static void ThrowHelperFailedAllocDecompressor() => throw new InvalidOperationException("Failed to allocate decompressor");
     }
     ~Decompressor() => Dispose(disposing: false);
 
