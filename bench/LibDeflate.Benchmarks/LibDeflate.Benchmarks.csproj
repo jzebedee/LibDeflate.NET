@@ -10,4 +10,8 @@
     <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LibDeflate\LibDeflate.csproj" />
+  </ItemGroup>
+
 </Project>
