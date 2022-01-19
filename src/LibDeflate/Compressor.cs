@@ -1,71 +1,82 @@
-﻿using LibDeflate.Imports;
-using Microsoft.Toolkit.HighPerformance.Buffers;
+﻿using LibDeflate.Buffers;
+using LibDeflate.Imports;
 using System;
+using System.Buffers;
 
-namespace LibDeflate
+namespace LibDeflate;
+
+using static Compression;
+
+public abstract class Compressor : IDisposable
 {
-    using static Compression;
+    protected readonly IntPtr compressor;
 
-    public abstract class Compressor : IDisposable
+    private bool disposedValue;
+
+    protected Compressor(int compressionLevel)
     {
-        protected readonly IntPtr compressor;
-
-        private bool disposedValue;
-
-        protected Compressor(int compressionLevel)
+        if (compressionLevel < 0 || compressionLevel > 12)
         {
-            if (compressionLevel < 0 || compressionLevel > 12)
-                throw new ArgumentOutOfRangeException(nameof(compressionLevel));
-
-            var compressor = libdeflate_alloc_compressor(compressionLevel);
-            if (compressor == IntPtr.Zero)
-                throw new InvalidOperationException("Failed to allocate compressor");
-
-            this.compressor = compressor;
+            throw new ArgumentOutOfRangeException(nameof(compressionLevel));
         }
-        ~Compressor() => DisposeCore();
 
-        protected abstract nuint CompressCore(ReadOnlySpan<byte> input, Span<byte> output);
-
-        protected abstract nuint GetBoundCore(nuint inputLength);
-
-        public MemoryOwner<byte>? Compress(ReadOnlySpan<byte> input, bool useUpperBound = false)
+        var compressor = libdeflate_alloc_compressor(compressionLevel);
+        if (compressor == IntPtr.Zero)
         {
-            var output = MemoryOwner<byte>.Allocate(useUpperBound ? GetBound(input.Length) : input.Length);
-            try
+            ThrowHelperFailedAllocCompressor();
+        }
+
+        this.compressor = compressor;
+
+        static void ThrowHelperFailedAllocCompressor() => throw new InvalidOperationException("Failed to allocate compressor");
+    }
+    ~Compressor() => Dispose(disposing: false);
+
+    protected abstract nuint CompressCore(ReadOnlySpan<byte> input, Span<byte> output);
+
+    protected abstract nuint GetBoundCore(nuint inputLength);
+
+    public IMemoryOwner<byte>? Compress(ReadOnlySpan<byte> input, bool useUpperBound = false)
+    {
+        var output = MemoryOwner<byte>.Allocate(useUpperBound ? GetBound(input.Length) : input.Length);
+        try
+        {
+            nuint bytesWritten = CompressCore(input, output.Span);
+            if (bytesWritten == UIntPtr.Zero)
             {
-                nuint bytesWritten = CompressCore(input, output.Span);
-                if (bytesWritten == UIntPtr.Zero)
-                {
-                    output.Dispose();
-                    return null;
-                }
+                output.Dispose();
+                return null;
+            }
 
-                return output.Slice(0, (int)bytesWritten);
-            }
-            catch
-            {
-                output?.Dispose();
-                throw;
-            }
+            return output.Slice(0, (int)bytesWritten);
         }
-        public int Compress(ReadOnlySpan<byte> input, Span<byte> output) => (int)CompressCore(input, output);
-
-        public int GetBound(int inputLength) => (int)GetBoundCore((nuint)inputLength);
-
-        private void DisposeCore()
+        catch
         {
-            if (!disposedValue)
-            {
-                libdeflate_free_compressor(compressor);
-                disposedValue = true;
-            }
+            output?.Dispose();
+            throw;
         }
+    }
+    public int Compress(ReadOnlySpan<byte> input, Span<byte> output) => (int)CompressCore(input, output);
 
-        public void Dispose()
+    public int GetBound(int inputLength) => (int)GetBoundCore((nuint)inputLength);
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
         {
-            DisposeCore();
-            GC.SuppressFinalize(this);
+            //no managed state to dispose
+            //if (disposing)
+            //{
+            //}
+
+            libdeflate_free_compressor(compressor);
+            disposedValue = true;
         }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -69,11 +68,15 @@ namespace LibDeflate.Tests
 
                 //decompress result with our lib
                 var status = decompressor.Decompress(bclDeflated.Span, inputMemory.Length, out var outputOwner);
-                Assert.Equal(OperationStatus.Done, status);
-                Assert.NotNull(outputOwner);
+                using (outputOwner)
+                {
+                    Assert.Equal(OperationStatus.Done, status);
+                    Assert.NotNull(outputOwner);
 
-                //ensure inflated results match input
-                Assert.True(outputOwner.Span.SequenceEqual(inputMemory.Span));
+                    //ensure inflated results match input
+                    var output = outputOwner.Memory.Span;
+                    Assert.True(output.SequenceEqual(inputMemory.Span));
+                }
             }
         }
 
@@ -143,11 +146,15 @@ namespace LibDeflate.Tests
             using (decompressor)
             {
                 var status = decompressor.Decompress(deflatedInput, inputMemory.Length, out var outputOwner, out int bytesRead);
-                Assert.Equal(OperationStatus.Done, status);
-                Assert.NotNull(outputOwner);
+                using (outputOwner)
+                {
+                    Assert.Equal(OperationStatus.Done, status);
+                    Assert.NotNull(outputOwner);
 
-                Assert.True(inputMemory.Span.SequenceEqual(outputOwner.Span));
-                Assert.Equal(expectedReadLength, bytesRead);
+                    var output = outputOwner.Memory.Span;
+                    Assert.True(inputMemory.Span.SequenceEqual(output));
+                    Assert.Equal(expectedReadLength, bytesRead);
+                }
             }
         }
     }
