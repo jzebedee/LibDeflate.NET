@@ -55,6 +55,37 @@ public class DecompressorTests
 
     [Theory]
     [MemberData(nameof(Decompressors))]
+    public void DisposedDecompressorThrows(Decompressor decompressor, ReadOnlyMemory<byte> input, BclDeflater bclDeflater)
+    {
+        //compress with BCL
+        var bclDeflated = bclDeflater(input);
+
+        using (decompressor)
+        {
+            //make sure we don't throw when not disposed
+            Decompress();
+        }
+
+        Assert.Throws<ObjectDisposedException>(Decompress);
+
+        void Decompress()
+        {
+            ReadOnlySpan<byte> inSpan = bclDeflated.Span;
+            decompressor.Decompress(inSpan, input.Length, out var owner);
+            owner.Dispose();
+
+            Span<byte> outSpan = new byte[input.Length];
+            decompressor.Decompress(inSpan, outSpan, out int bytesWritten);
+
+            decompressor.Decompress(inSpan, input.Length, out owner, out int bytesRead);
+            owner.Dispose();
+
+            decompressor.Decompress(inSpan, outSpan, out bytesWritten, out bytesRead);
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(Decompressors))]
     public void DecompressOwnedBufferTest(Decompressor decompressor, ReadOnlyMemory<byte> inputMemory, BclDeflater bclDeflater)
     {
         using (decompressor)
