@@ -41,6 +41,30 @@ public class CompressorTests
     }
 
     [Theory]
+    [MemberData(nameof(Compressors), 1)]
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+    public void DisposedCompressorThrows(Compressor compressor, ReadOnlyMemory<byte> input, BclInflater _)
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+    {
+        using (compressor)
+        {
+            //make sure we don't throw when not disposed
+            Compress();
+        }
+
+        Assert.Throws<ObjectDisposedException>(Compress);
+
+        void Compress()
+        {
+            ReadOnlySpan<byte> inSpan = input.Span;
+            using var outputOwner = compressor.Compress(inSpan);
+
+            Span<byte> output = new byte[input.Length];
+            compressor.Compress(inSpan, output);
+        }
+    }
+
+    [Theory]
     [MemberData(nameof(AllCompressors))]
     public void CompressOwnedBufferTest(Compressor compressor, ReadOnlyMemory<byte> input, BclInflater bclInflater)
     {
