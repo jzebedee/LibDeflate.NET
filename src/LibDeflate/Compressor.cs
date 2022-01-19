@@ -40,6 +40,7 @@ public abstract class Compressor : IDisposable
 
     public IMemoryOwner<byte>? Compress(ReadOnlySpan<byte> input, bool useUpperBound = false)
     {
+        DisposedGuard();
         var output = MemoryOwner<byte>.Allocate(useUpperBound ? GetBound(input.Length) : input.Length);
         try
         {
@@ -58,9 +59,27 @@ public abstract class Compressor : IDisposable
             throw;
         }
     }
-    public int Compress(ReadOnlySpan<byte> input, Span<byte> output) => (int)CompressCore(input, output);
+    public int Compress(ReadOnlySpan<byte> input, Span<byte> output)
+    {
+        DisposedGuard();
+        return (int)CompressCore(input, output);
+    }
 
-    public int GetBound(int inputLength) => (int)GetBoundCore((nuint)inputLength);
+    public int GetBound(int inputLength)
+    {
+        DisposedGuard();
+        return (int)GetBoundCore((nuint)inputLength);
+    }
+
+    private void DisposedGuard()
+    {
+        if(disposedValue)
+        {
+            ThrowHelperObjectDisposed();
+        }
+
+        static void ThrowHelperObjectDisposed() => throw new ObjectDisposedException(nameof(Compressor));
+    }
 
     protected virtual void Dispose(bool disposing)
     {
