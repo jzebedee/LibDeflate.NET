@@ -59,7 +59,7 @@ public class CompressorTests
             ReadOnlySpan<byte> inSpan = input.Span;
             using var outputOwner = compressor.Compress(inSpan);
 
-            Span<byte> output = new byte[input.Length];
+            Span<byte> output = new byte[compressor.GetBound(input.Length)];
             compressor.Compress(inSpan, output);
         }
     }
