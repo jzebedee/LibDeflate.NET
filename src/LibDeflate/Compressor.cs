@@ -16,15 +16,21 @@ public abstract class Compressor : IDisposable
     protected Compressor(int compressionLevel)
     {
         if (compressionLevel < 0 || compressionLevel > 12)
+        {
             throw new ArgumentOutOfRangeException(nameof(compressionLevel));
+        }
 
         var compressor = libdeflate_alloc_compressor(compressionLevel);
         if (compressor == IntPtr.Zero)
-            throw new InvalidOperationException("Failed to allocate compressor");
+        {
+            ThrowHelperFailedAllocCompressor();
+        }
 
         this.compressor = compressor;
+
+        static void ThrowHelperFailedAllocCompressor() => throw new InvalidOperationException("Failed to allocate compressor");
     }
-    ~Compressor() => DisposeCore();
+    ~Compressor() => Dispose(disposing: false);
 
     protected abstract nuint CompressCore(ReadOnlySpan<byte> input, Span<byte> output);
 
@@ -54,10 +60,15 @@ public abstract class Compressor : IDisposable
 
     public int GetBound(int inputLength) => (int)GetBoundCore((nuint)inputLength);
 
-    private void DisposeCore()
+    protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)
         {
+            //no managed state to dispose
+            //if (disposing)
+            //{
+            //}
+
             libdeflate_free_compressor(compressor);
             disposedValue = true;
         }
@@ -65,7 +76,7 @@ public abstract class Compressor : IDisposable
 
     public void Dispose()
     {
-        DisposeCore();
+        Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
 }
