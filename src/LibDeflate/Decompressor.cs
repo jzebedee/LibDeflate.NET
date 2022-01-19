@@ -20,7 +20,7 @@ public abstract class Decompressor : IDisposable
 
         this.decompressor = decompressor;
     }
-    ~Decompressor() => DisposeCore();
+    ~Decompressor() => Dispose(disposing: false);
 
     internal static OperationStatus StatusFromResult(libdeflate_result result)
         => result switch
@@ -129,10 +129,15 @@ public abstract class Decompressor : IDisposable
         }
     }
 
-    private void DisposeCore()
+    protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)
         {
+            //no managed state to dispose
+            //if (disposing)
+            //{
+            //}
+
             libdeflate_free_decompressor(decompressor);
             disposedValue = true;
         }
@@ -140,7 +145,7 @@ public abstract class Decompressor : IDisposable
 
     public void Dispose()
     {
-        DisposeCore();
+        Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
 }
