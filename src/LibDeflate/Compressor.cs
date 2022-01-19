@@ -17,7 +17,7 @@ public abstract class Compressor : IDisposable
     {
         if (compressionLevel < 0 || compressionLevel > 12)
         {
-            throw new ArgumentOutOfRangeException(nameof(compressionLevel));
+            ThrowHelperBadCompressionLevel();
         }
 
         var compressor = libdeflate_alloc_compressor(compressionLevel);
@@ -27,6 +27,8 @@ public abstract class Compressor : IDisposable
         }
 
         this.compressor = compressor;
+
+        static void ThrowHelperBadCompressionLevel() => throw new ArgumentOutOfRangeException(nameof(compressionLevel));
 
         static void ThrowHelperFailedAllocCompressor() => throw new InvalidOperationException("Failed to allocate compressor");
     }
