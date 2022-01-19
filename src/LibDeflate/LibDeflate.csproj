@@ -1,18 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.1;netstandard2.0</TargetFrameworks>
     <AssemblyName>LibDeflate.NET</AssemblyName>
-    <Version>1.9.0</Version>
+    <VersionPrefix>1.9.0</VersionPrefix>
     <Authors>jzebedee</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jzebedee/LibDeflate</PackageProjectUrl>
     <PackageTags>libdeflate.net libdeflate deflate zlib gzip gz crc32 crc adler32 adler</PackageTags>
     <Description>LibDeflate.NET is a managed wrapper around libdeflate, a native library for fast, whole-buffer DEFLATE-based compression and decompression.</Description>
 
-	<LangVersion>latest</LangVersion>
-	<Nullable>enable</Nullable>
-	  
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <IsTrimmable>true</IsTrimmable>
+
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -20,11 +21,51 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
+  <!-- Source Link Support -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <!-- TFM-specific dependencies -->
+  <Choose>
+    <When Condition="'$(TargetFramework)' == 'netstandard2.0'">
+      <ItemGroup>
+        <PackageReference Include="System.Memory" Version="4.5.4" />
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+      </ItemGroup>
+    </When>
+    <When Condition="'$(TargetFramework)' == 'netstandard2.1'">
+      <ItemGroup>
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+      </ItemGroup>
+    </When>
+    
+    <When Condition="'$(TargetFramework)' == 'net6.0'">
+      <PropertyGroup>
+        <DefineConstants>NETSTANDARD2_1_OR_GREATER</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(TargetFramework)' == 'net5.0'">
+      <PropertyGroup>
+        <DefineConstants>NETSTANDARD2_1_OR_GREATER</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+      <ItemGroup>
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+      </ItemGroup>
+      <PropertyGroup>
+        <DefineConstants>NETSTANDARD2_1_OR_GREATER</DefineConstants>
+      </PropertyGroup>
+    </When>
+  </Choose>
+
+  <!-- Regular dependencies -->
   <ItemGroup>
     <PackageReference Include="LibDeflate.Native" Version="1.7.1" />
-
-    <!-- Sourcelink support -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
