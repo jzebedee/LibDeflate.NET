@@ -39,6 +39,7 @@ public abstract class Decompressor : IDisposable
 
     public OperationStatus Decompress(ReadOnlySpan<byte> input, int uncompressedSize, out IMemoryOwner<byte>? outputOwner, out int bytesRead)
     {
+        DisposedGuard();
         var output = MemoryOwner<byte>.Allocate(uncompressedSize);
         try
         {
@@ -68,6 +69,7 @@ public abstract class Decompressor : IDisposable
 
     public OperationStatus Decompress(ReadOnlySpan<byte> input, int uncompressedSize, out IMemoryOwner<byte>? outputOwner)
     {
+        DisposedGuard();
         var output = MemoryOwner<byte>.Allocate(uncompressedSize);
         try
         {
@@ -95,6 +97,7 @@ public abstract class Decompressor : IDisposable
 
     public OperationStatus Decompress(ReadOnlySpan<byte> input, Span<byte> output, out int bytesWritten, out int bytesRead)
     {
+        DisposedGuard();
         var status = DecompressCore(input, output, out nuint out_nbytes, out nuint in_nbytes);
         switch (status)
         {
@@ -114,6 +117,7 @@ public abstract class Decompressor : IDisposable
 
     public OperationStatus Decompress(ReadOnlySpan<byte> input, Span<byte> output, out int bytesWritten)
     {
+        DisposedGuard();
         var status = DecompressCore(input, output, out nuint out_nbytes);
         switch (status)
         {
@@ -127,6 +131,16 @@ public abstract class Decompressor : IDisposable
                 bytesWritten = default;
                 return status;
         }
+    }
+
+    private void DisposedGuard()
+    {
+        if (disposedValue)
+        {
+            ThrowHelperObjectDisposed();
+        }
+
+        static void ThrowHelperObjectDisposed() => throw new ObjectDisposedException(nameof(Decompressor));
     }
 
     protected virtual void Dispose(bool disposing)
