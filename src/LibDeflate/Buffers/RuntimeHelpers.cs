@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-#if !NETSTANDARD2_1_OR_GREATER
+#if !NET6_0_OR_GREATER
 using System.Reflection;
 #endif
 using System.Runtime.CompilerServices;
@@ -13,7 +13,8 @@ namespace LibDeflate.Buffers;
 /// </summary>
 internal static class RuntimeHelpers
 {
-#if !NETCOREAPP3_1_OR_GREATER
+
+#if !NET6_0_OR_GREATER
     /// <summary>
     /// Gets the byte offset to the first <typeparamref name="T"/> element in a SZ array.
     /// </summary>
@@ -22,8 +23,7 @@ internal static class RuntimeHelpers
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IntPtr GetArrayDataByteOffset<T>() => TypeInfo<T>.ArrayDataByteOffset;
-#endif
-#if !NETSTANDARD2_1_OR_GREATER
+
     /// <summary>
     /// Checks whether or not a given type is a reference type or contains references.
     /// </summary>
@@ -94,7 +94,7 @@ internal static class RuntimeHelpers
         /// </summary>
         public static readonly IntPtr ArrayDataByteOffset = MeasureArrayDataByteOffset();
 
-#if !NETSTANDARD2_1_OR_GREATER
+#if !NET6_0_OR_GREATER
         /// <summary>
         /// Indicates whether <typeparamref name="T"/> does not respect the <see langword="unmanaged"/> constraint.
         /// </summary>
