@@ -2,6 +2,7 @@
 using LibDeflate.Imports;
 using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace LibDeflate;
 using static Decompression;
@@ -17,12 +18,13 @@ public abstract class Decompressor : IDisposable
         var decompressor = libdeflate_alloc_decompressor();
         if (decompressor == IntPtr.Zero)
         {
-            ThrowHelperFailedAllocDecompressor();
+            ThrowHelper_FailedAllocDecompressor();
         }
 
         this.decompressor = decompressor;
 
-        static void ThrowHelperFailedAllocDecompressor() => throw new InvalidOperationException("Failed to allocate decompressor");
+        [DoesNotReturn]
+        static void ThrowHelper_FailedAllocDecompressor() => throw new InvalidOperationException("Failed to allocate decompressor");
     }
     ~Decompressor() => Dispose(disposing: false);
 
@@ -144,6 +146,7 @@ public abstract class Decompressor : IDisposable
             ThrowHelperObjectDisposed();
         }
 
+        [DoesNotReturn]
         static void ThrowHelperObjectDisposed() => throw new ObjectDisposedException(nameof(Decompressor));
     }
 
