@@ -176,7 +176,7 @@ internal sealed class MemoryOwner<T> : IMemoryOwner<T>
                 ThrowObjectDisposedException();
             }
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             ref T r0 = ref array!.DangerousGetReferenceAt(this.start);
 
             // On .NET Core runtimes, we can manually create a span from the starting reference to
