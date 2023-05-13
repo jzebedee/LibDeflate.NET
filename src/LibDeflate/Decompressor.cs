@@ -29,14 +29,15 @@ public abstract class Decompressor : IDisposable
     ~Decompressor() => Dispose(disposing: false);
 
     internal static OperationStatus StatusFromResult(libdeflate_result result)
+#pragma warning disable CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
         => result switch
         {
             libdeflate_result.LIBDEFLATE_SUCCESS => OperationStatus.Done,
             libdeflate_result.LIBDEFLATE_BAD_DATA => OperationStatus.InvalidData,
             libdeflate_result.LIBDEFLATE_SHORT_OUTPUT => OperationStatus.NeedMoreData,
             libdeflate_result.LIBDEFLATE_INSUFFICIENT_SPACE => OperationStatus.DestinationTooSmall,
-            _ => throw new InvalidOperationException("Unknown result from libdeflate")
         };
+#pragma warning restore CS8524 // The switch expression does not handle some values of its input type (it is not exhaustive) involving an unnamed enum value.
 
     protected abstract OperationStatus DecompressCore(ReadOnlySpan<byte> input, Span<byte> output, nuint uncompressedSize);
     protected abstract OperationStatus DecompressCore(ReadOnlySpan<byte> input, Span<byte> output, out nuint bytesWritten);
