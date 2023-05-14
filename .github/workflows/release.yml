@@ -1,16 +1,17 @@
 name: Upload packages to feeds
 on:
   release:
-    types: [created]
-  workflow_dispatch:
+    types: [published, edited]
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.0.x' # SDK Version to use.
+        dotnet-version: |
+          6.0.x
+          7.0.x
     - name: Pack
       run: dotnet pack -c Release -o pkg
     - name: Publish the package to GPR
