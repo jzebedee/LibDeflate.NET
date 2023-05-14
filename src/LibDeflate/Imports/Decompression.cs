@@ -48,7 +48,7 @@ internal static class Decompression
     /// A single decompressor is not safe to use by multiple threads concurrently.
     /// However, different threads may use different decompressors concurrently.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
+    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern libdeflate_decompressor libdeflate_alloc_decompressor();
 
     ///<summary>
@@ -83,7 +83,7 @@ internal static class Decompression
     ///     not large enough but no other problems were encountered, or another
     ///     nonzero result code if decompression failed for another reason.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
+    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern libdeflate_result libdeflate_deflate_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -92,7 +92,7 @@ internal static class Decompression
     /// then the actual compressed size of the DEFLATE stream (aligned to the next
     /// byte boundary) is written to *actual_in_nbytes_ret.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
+    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern libdeflate_result libdeflate_deflate_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -103,7 +103,7 @@ internal static class Decompression
     /// than 'in_nbytes'.  If you need to know exactly where the zlib stream ended,
     /// use libdeflate_zlib_decompress_ex().
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
+    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern libdeflate_result libdeflate_zlib_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -114,7 +114,7 @@ internal static class Decompression
     /// than 'in_nbytes'.  If you need to know exactly where the zlib stream ended,
     /// use libdeflate_zlib_decompress_ex().
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
+    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern libdeflate_result libdeflate_zlib_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -125,7 +125,7 @@ internal static class Decompression
     /// will be decompressed.  Use libdeflate_gzip_decompress_ex() if you need
     /// multi-member support.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
+    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern libdeflate_result libdeflate_gzip_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -135,7 +135,7 @@ internal static class Decompression
     /// buffer was decompressed), then the actual number of input bytes consumed is
     /// written to *actual_in_nbytes_ret.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
+    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern libdeflate_result libdeflate_gzip_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -143,6 +143,6 @@ internal static class Decompression
     /// libdeflate_alloc_decompressor().  If a NULL pointer is passed in, no action
     /// is taken.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
+    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern void libdeflate_free_decompressor(libdeflate_decompressor compressor);
 }

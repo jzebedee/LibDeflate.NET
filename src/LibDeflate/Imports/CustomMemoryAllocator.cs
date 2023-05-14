@@ -20,6 +20,6 @@ internal static class CustomMemoryAllocator
     /// There must not be any libdeflate_compressor or libdeflate_decompressor
     /// structures in existence when calling this function.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.StdCall)]
+    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern void libdeflate_set_memory_allocator(malloc_func malloc, free_func free);
 }
