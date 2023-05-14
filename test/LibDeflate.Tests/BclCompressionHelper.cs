@@ -1,4 +1,6 @@
-﻿using SixLabors.ZlibStream;
+﻿#if !NET8_0_OR_GREATER
+using SixLabors.ZlibStream;
+#endif
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -47,7 +49,11 @@ internal static class BclCompressionHelper
         switch (mode)
         {
             case CompressionMode.Compress:
+#if NET8_0_OR_GREATER
+                using (var zlibStream = new ZLibStream(outputMs, mode, leaveOpen: true))
+#else
                 using (var zlibStream = new ZlibOutputStream(outputMs, SixLabors.ZlibStream.CompressionLevel.DefaultCompression))
+#endif
                 {
                     zlibStream.Write(input);
                     zlibStream.Flush();
@@ -55,7 +61,11 @@ internal static class BclCompressionHelper
                 break;
             case CompressionMode.Decompress:
                 using (var inputMs = CopySpanToMemoryStream(input))
+#if NET8_0_OR_GREATER
+                using (var zlibStream = new ZLibStream(inputMs, mode, leaveOpen: true))
+#else
                 using (var zlibStream = new ZlibInputStream(inputMs))
+#endif
                 {
                     zlibStream.CopyTo(outputMs);
                 }
