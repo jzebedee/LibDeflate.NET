@@ -43,6 +43,8 @@ public class DecompressorTests
     {
         var rand = GetRepeatableRandom();
         var oversizedMs = new MemoryStream();
+
+#if NET6_0_OR_GREATER
         oversizedMs.Write(input);
 
         expectedReadLength = (int)oversizedMs.Length;
@@ -51,6 +53,16 @@ public class DecompressorTests
         oversizedMs.Write(appendedGarbage);
 
         return oversizedMs.GetBuffer()[..(int)oversizedMs.Length];
+#else
+        oversizedMs.Write(input.ToArray(), 0, input.Length);
+
+        expectedReadLength = (int)oversizedMs.Length;
+        var appendedGarbage = new byte[0x40];
+        rand.NextBytes(appendedGarbage);
+        oversizedMs.Write(appendedGarbage, 0, appendedGarbage.Length);
+
+        return oversizedMs.GetBuffer().AsSpan(0, (int)oversizedMs.Length).ToArray();
+#endif
     }
 
     [Theory]

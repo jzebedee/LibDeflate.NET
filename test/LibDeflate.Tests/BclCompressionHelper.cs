@@ -1,5 +1,4 @@
-﻿using SixLabors.ZlibStream;
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 
@@ -10,7 +9,11 @@ internal static class BclCompressionHelper
     internal static MemoryStream CopySpanToMemoryStream(ReadOnlySpan<byte> input)
     {
         var ms = new MemoryStream();
+#if NET6_0_OR_GREATER
         ms.Write(input);
+#else
+        ms.Write(input.ToArray(), 0, input.Length);
+#endif
         ms.Seek(0, SeekOrigin.Begin);
         return ms;
     }
@@ -24,7 +27,11 @@ internal static class BclCompressionHelper
             case CompressionMode.Compress:
                 using (var flateStream = new DeflateStream(outputMs, mode, true))
                 {
+#if NET6_0_OR_GREATER
                     flateStream.Write(input);
+#else
+                    flateStream.Write(input.ToArray(), 0, input.Length);
+#endif
                     flateStream.Flush();
                 }
                 break;
@@ -47,15 +54,19 @@ internal static class BclCompressionHelper
         switch (mode)
         {
             case CompressionMode.Compress:
-                using (var zlibStream = new ZlibOutputStream(outputMs, SixLabors.ZlibStream.CompressionLevel.DefaultCompression))
+                using (var zlibStream = new Ionic.Zlib.ZlibStream(outputMs, Ionic.Zlib.CompressionMode.Compress))
                 {
+#if NET6_0_OR_GREATER
                     zlibStream.Write(input);
+#else
+                    zlibStream.Write(input.ToArray(), 0, input.Length);
+#endif
                     zlibStream.Flush();
                 }
                 break;
             case CompressionMode.Decompress:
                 using (var inputMs = CopySpanToMemoryStream(input))
-                using (var zlibStream = new ZlibInputStream(inputMs))
+                using (var zlibStream = new Ionic.Zlib.ZlibStream(inputMs, Ionic.Zlib.CompressionMode.Decompress))
                 {
                     zlibStream.CopyTo(outputMs);
                 }
@@ -75,7 +86,11 @@ internal static class BclCompressionHelper
             case CompressionMode.Compress:
                 using (var flateStream = new GZipStream(outputMs, mode, true))
                 {
+#if NET6_0_OR_GREATER
                     flateStream.Write(input);
+#else
+                    flateStream.Write(input.ToArray(), 0, input.Length);
+#endif
                     flateStream.Flush();
                 }
                 break;

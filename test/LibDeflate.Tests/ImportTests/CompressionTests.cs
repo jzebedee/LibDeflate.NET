@@ -42,7 +42,12 @@ public class CompressionTests
             var numBytesCompressed = Imports.Compression.libdeflate_deflate_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
 
             var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
-            var actual = Encoding.UTF8.GetString(FlateToBuffer(compressedBuffer, CompressionMode.Decompress).Span);
+#if NET6_0_OR_GREATER
+            var buf = FlateToBuffer(compressedBuffer, CompressionMode.Decompress).Span;
+#else
+            var buf = FlateToBuffer(compressedBuffer, CompressionMode.Decompress).ToArray();
+#endif
+            var actual = Encoding.UTF8.GetString(buf);
             Assert.Equal(expected, actual);
         }
         finally
@@ -75,7 +80,12 @@ public class CompressionTests
             var numBytesCompressed = Imports.Compression.libdeflate_zlib_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
 
             var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
-            var actual = Encoding.UTF8.GetString(ZlibToBuffer(compressedBuffer, CompressionMode.Decompress).Span);
+#if NET6_0_OR_GREATER
+            var buf = ZlibToBuffer(compressedBuffer, CompressionMode.Decompress).Span;
+#else
+            var buf = ZlibToBuffer(compressedBuffer, CompressionMode.Decompress).ToArray();
+#endif
+            var actual = Encoding.UTF8.GetString(buf);
             Assert.Equal(expected, actual);
         }
         finally
@@ -106,7 +116,12 @@ public class CompressionTests
             var numBytesCompressed = Imports.Compression.libdeflate_gzip_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
 
             var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
-            var actual = Encoding.UTF8.GetString(GzipToBuffer(compressedBuffer, CompressionMode.Decompress).Span);
+#if NET6_0_OR_GREATER
+            var buf = GzipToBuffer(compressedBuffer, CompressionMode.Decompress).Span;
+#else
+            var buf = GzipToBuffer(compressedBuffer, CompressionMode.Decompress).ToArray();
+#endif
+            var actual = Encoding.UTF8.GetString(buf);
             Assert.Equal(expected, actual);
         }
         finally

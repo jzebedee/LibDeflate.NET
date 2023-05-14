@@ -89,7 +89,7 @@ public class CompressorTests
             int bytesWritten = compressor.Compress(input.Span, outputSpan);
             Assert.True(bytesWritten > 0);
 
-            var bclInflated = bclInflater(outputSpan[..bytesWritten]);
+            var bclInflated = bclInflater(outputSpan.AsMemory(0, bytesWritten));
             Assert.True(input.Span.SequenceEqual(bclInflated.Span));
         }
     }
