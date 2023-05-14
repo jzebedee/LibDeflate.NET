@@ -8,19 +8,12 @@ jobs:
         os: [ubuntu-latest,windows-latest,macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET SDK - 6.0.x
-      uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.0.x'
-    - name: Setup .NET SDK - 5.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '5.0.x'
-    - name: Setup .NET SDK - 3.1.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
+        dotnet-version: |
+          6.0.x
+          7.0.x
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -28,7 +21,7 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --no-build --configuration Release --logger trx --results-directory "TestResults"
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
           name: TestResults
           path: TestResults
@@ -37,7 +30,7 @@ jobs:
     - name: Pack
       run: dotnet pack --no-restore --no-build --configuration Release --version-suffix CI-${{ github.run_id }} --output pkg
     - name: Upload package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
           name: LibDeflate-${{ matrix.os }}
           path: pkg/*
