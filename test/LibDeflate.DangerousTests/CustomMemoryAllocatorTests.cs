@@ -19,14 +19,12 @@ public class CustomMemoryAllocatorTests
         Assert.Equal(0, freeCount);
     }
 
-    //[UnmanagedCallersOnly]
     private static nint malloc(nuint len)
     {
         mallocCount++;
         return Marshal.AllocHGlobal((nint)len);
     }
 
-    //[UnmanagedCallersOnly]
     private static void free(nint alloc)
     {
         freeCount++;
@@ -53,14 +51,14 @@ public class CustomMemoryAllocatorTests
     private static unsafe void* malloc_unsafe(nuint len)
     {
         mallocCount++;
-        return (void*)Marshal.AllocHGlobal((nint)len);
+        return NativeMemory.Alloc(len);
     }
 
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static unsafe void free_unsafe(void* alloc)
     {
         freeCount++;
-        Marshal.FreeHGlobal((nint)alloc);
+        NativeMemory.Free(alloc);
     }
 
     [Fact]
