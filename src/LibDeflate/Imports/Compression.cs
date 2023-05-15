@@ -1,11 +1,12 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace LibDeflate.Imports;
 
 using libdeflate_compressor = System.IntPtr;
 using size_t = System.UIntPtr;
 
-internal static class Compression
+internal static partial class Compression
 {
     ///<summary>
     /// libdeflate_alloc_compressor() allocates a new compressor that supports
@@ -25,8 +26,9 @@ internal static class Compression
     /// A single compressor is not safe to use by multiple threads concurrently.
     /// However, different threads may use different compressors concurrently.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern libdeflate_compressor libdeflate_alloc_compressor(int compression_level);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial libdeflate_compressor libdeflate_alloc_compressor(int compression_level);
 
     ///<summary>
     /// libdeflate_deflate_compress() performs raw DEFLATE compression on a buffer of
@@ -35,8 +37,9 @@ internal static class Compression
     /// bytes.  The return value is the compressed size in bytes, or 0 if the data
     /// could not be compressed to 'out_nbytes_avail' bytes or fewer.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern size_t libdeflate_deflate_compress(libdeflate_compressor compressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial size_t libdeflate_deflate_compress(libdeflate_compressor compressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail);
 
 
     ///<summary>
@@ -64,44 +67,50 @@ internal static class Compression
     /// libdeflate_deflate_compress() returns 0, indicating that the compressed data
     /// did not fit into the provided output buffer.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern size_t libdeflate_deflate_compress_bound(libdeflate_compressor compressor, size_t in_nbytes);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial size_t libdeflate_deflate_compress_bound(libdeflate_compressor compressor, size_t in_nbytes);
 
     ///<summary>
     /// Like libdeflate_deflate_compress(), but stores the data in the zlib wrapper
     /// format.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern size_t libdeflate_zlib_compress(libdeflate_compressor compressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial size_t libdeflate_zlib_compress(libdeflate_compressor compressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail);
 
     ///<summary>
     /// Like libdeflate_deflate_compress_bound(), but assumes the data will be
     /// compressed with libdeflate_zlib_compress() rather than with
     /// libdeflate_deflate_compress().
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern size_t libdeflate_zlib_compress_bound(libdeflate_compressor compressor, size_t in_nbytes);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial size_t libdeflate_zlib_compress_bound(libdeflate_compressor compressor, size_t in_nbytes);
 
     ///<summary>
     /// Like libdeflate_deflate_compress(), but stores the data in the gzip wrapper
     /// format.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern size_t libdeflate_gzip_compress(libdeflate_compressor compressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial size_t libdeflate_gzip_compress(libdeflate_compressor compressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail);
 
     ///<summary>
     /// Like libdeflate_deflate_compress_bound(), but assumes the data will be
     /// compressed with libdeflate_gzip_compress() rather than with
     /// libdeflate_deflate_compress().
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern size_t libdeflate_gzip_compress_bound(libdeflate_compressor compressor, size_t in_nbytes);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial size_t libdeflate_gzip_compress_bound(libdeflate_compressor compressor, size_t in_nbytes);
 
     ///<summary>
     /// libdeflate_free_compressor() frees a compressor that was allocated with
     /// libdeflate_alloc_compressor().  If a NULL pointer is passed in, no action is
     /// taken.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void libdeflate_free_compressor(libdeflate_compressor compressor);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial void libdeflate_free_compressor(libdeflate_compressor compressor);
 }

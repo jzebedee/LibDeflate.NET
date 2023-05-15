@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace LibDeflate.Imports;
 
 using size_t = System.UIntPtr;
 
-internal static class Checksums
+internal static partial class Checksums
 {
     ///<summary>
     /// libdeflate_adler32() updates a running Adler-32 checksum with 'len' bytes of
@@ -13,8 +14,9 @@ internal static class Checksums
     /// required initial value for 'adler' is 1.  This value is also returned when
     /// 'buffer' is specified as NULL.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern UInt32 libdeflate_adler32(UInt32 adler, in byte buffer, size_t len);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial UInt32 libdeflate_adler32(UInt32 adler, in byte buffer, size_t len);
 
     ///<summary>
     /// libdeflate_crc32() updates a running CRC-32 checksum with 'len' bytes of data
@@ -22,6 +24,7 @@ internal static class Checksums
     /// initial value for 'crc' is 0.  This value is also returned when 'buffer' is
     /// specified as NULL.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern UInt32 libdeflate_crc32(UInt32 crc, in byte buffer, size_t len);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial UInt32 libdeflate_crc32(UInt32 crc, in byte buffer, size_t len);
 }
