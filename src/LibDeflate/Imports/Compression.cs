@@ -28,6 +28,12 @@ internal static class Compression
     [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern libdeflate_compressor libdeflate_alloc_compressor(int compression_level);
 
+    /// <summary>
+    /// Like <see cref="libdeflate_alloc_compressor"/> but allows specifying advanced options per-compressor.
+    /// </summary>
+    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
+    public static extern libdeflate_compressor libdeflate_alloc_compressor_ex(int compression_level, in CustomMemoryAllocator.libdeflate_options options);
+
     ///<summary>
     /// libdeflate_deflate_compress() performs raw DEFLATE compression on a buffer of
     /// data.  The function attempts to compress 'in_nbytes' bytes of data located at
@@ -37,7 +43,6 @@ internal static class Compression
     ///</summary>
     [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern size_t libdeflate_deflate_compress(libdeflate_compressor compressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail);
-
 
     ///<summary>
     /// libdeflate_deflate_compress_bound() returns a worst-case upper bound on the
