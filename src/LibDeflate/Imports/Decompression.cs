@@ -55,7 +55,7 @@ internal static class Decompression
     /// Like <see cref="libdeflate_alloc_decompressor"/> but allows specifying advanced options per-decompressor.
     /// </summary>
     [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern libdeflate_decompressor libdeflate_alloc_decompressor_ex(in CustomMemoryAllocator.libdeflate_options options);
+    public static extern libdeflate_decompressor libdeflate_alloc_decompressor_ex(in libdeflate_options options);
 
     ///<summary>
     /// libdeflate_deflate_decompress() decompresses the DEFLATE-compressed stream
