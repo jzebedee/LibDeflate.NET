@@ -23,6 +23,13 @@ internal static class CustomMemoryAllocator
     [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern void libdeflate_set_memory_allocator(malloc_func malloc, free_func free);
 
+    /// <summary>
+    /// Advanced options.  This is the options structure that
+    /// <see cref="Compression.libdeflate_alloc_compressor_ex"/>
+    /// and <see cref="Decompression.libdeflate_alloc_decompressor_ex"/>
+    /// require.  Most users won't need this and should just use the non-"_ex"
+    /// functions instead.
+    /// </summary>
     internal readonly struct libdeflate_options
     {
         private static readonly size_t Size = (nuint)(nint)Unsafe.SizeOf<libdeflate_options>();
