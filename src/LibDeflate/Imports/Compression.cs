@@ -32,7 +32,7 @@ internal static class Compression
     /// Like <see cref="libdeflate_alloc_compressor"/> but allows specifying advanced options per-compressor.
     /// </summary>
     [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern libdeflate_compressor libdeflate_alloc_compressor_ex(int compression_level, in CustomMemoryAllocator.libdeflate_options options);
+    public static extern libdeflate_compressor libdeflate_alloc_compressor_ex(int compression_level, in libdeflate_options options);
 
     ///<summary>
     /// libdeflate_deflate_compress() performs raw DEFLATE compression on a buffer of

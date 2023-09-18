@@ -57,7 +57,7 @@ public class CustomMemoryAllocatorTests
 
         int localMallocs = 0;
         int localFrees = 0;
-        var options = new CustomMemoryAllocator.libdeflate_options((nuint len) =>
+        var options = new libdeflate_options((nuint len) =>
         {
             localMallocs++;
             return Marshal.AllocHGlobal((nint)len);
