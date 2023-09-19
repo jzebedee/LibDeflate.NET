@@ -2,8 +2,8 @@
 
 namespace LibDeflate.Imports;
 
-using libdeflate_compressor = System.IntPtr;
-using size_t = System.UIntPtr;
+using libdeflate_compressor = nint;
+using size_t = nuint;
 
 internal static class Compression
 {
