@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 namespace LibDeflate.Imports;
 
@@ -19,23 +20,29 @@ internal readonly struct libdeflate_options
     public libdeflate_options(malloc_func malloc, free_func free)
     {
 #if NET6_0_OR_GREATER
-            ArgumentNullException.ThrowIfNull(malloc);
-            ArgumentNullException.ThrowIfNull(free);
+        ArgumentNullException.ThrowIfNull(malloc);
+        ArgumentNullException.ThrowIfNull(free);
 #else
-        //TODO: add throwhelpers
-        if (malloc is null)
-        {
-            throw new ArgumentNullException(nameof(malloc));
-        }
-
-        if (free is null)
-        {
-            throw new ArgumentNullException(nameof(free));
-        }
+        ThrowIfNull(malloc);
+        ThrowIfNull(free);
 #endif
+
         this.sizeof_options = Size;
         this.malloc = malloc;
         this.free = free;
+
+#if !NET6_0_OR_GREATER
+        static void ThrowIfNull([NotNull] object? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
+        {
+            if(argument is null)
+            {
+                ThrowHelperArgumentNull(paramName!);
+            }
+
+            [DoesNotReturn]
+            static void ThrowHelperArgumentNull(string paramName) => throw new ArgumentNullException(paramName);
+        }
+#endif
     }
 
     /// <summary>
