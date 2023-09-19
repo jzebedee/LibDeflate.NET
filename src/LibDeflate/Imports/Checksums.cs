@@ -1,9 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace LibDeflate.Imports;
 
-using size_t = System.UIntPtr;
+using size_t = nuint;
 
 internal static class Checksums
 {
@@ -14,7 +13,7 @@ internal static class Checksums
     /// 'buffer' is specified as NULL.
     ///</summary>
     [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern UInt32 libdeflate_adler32(UInt32 adler, in byte buffer, size_t len);
+    public static extern uint libdeflate_adler32(uint adler, in byte buffer, size_t len);
 
     ///<summary>
     /// libdeflate_crc32() updates a running CRC-32 checksum with 'len' bytes of data
@@ -23,5 +22,5 @@ internal static class Checksums
     /// specified as NULL.
     ///</summary>
     [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern UInt32 libdeflate_crc32(UInt32 crc, in byte buffer, size_t len);
+    public static extern uint libdeflate_crc32(uint crc, in byte buffer, size_t len);
 }
