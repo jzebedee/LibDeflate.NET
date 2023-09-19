@@ -12,7 +12,7 @@ internal static class Checksums
     /// required initial value for 'adler' is 1.  This value is also returned when
     /// 'buffer' is specified as NULL.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
     public static extern uint libdeflate_adler32(uint adler, in byte buffer, size_t len);
 
     ///<summary>
@@ -21,6 +21,6 @@ internal static class Checksums
     /// initial value for 'crc' is 0.  This value is also returned when 'buffer' is
     /// specified as NULL.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
+    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
     public static extern uint libdeflate_crc32(uint crc, in byte buffer, size_t len);
 }
