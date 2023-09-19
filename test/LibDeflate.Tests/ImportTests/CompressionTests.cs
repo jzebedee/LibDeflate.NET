@@ -21,7 +21,7 @@ public class CompressionTests
         var compressor = Imports.Compression.libdeflate_alloc_compressor(compressionLevel);
         try
         {
-            Assert.NotEqual(compressor, IntPtr.Zero);
+            Assert.NotEqual(0, compressor);
         }
         finally
         {
