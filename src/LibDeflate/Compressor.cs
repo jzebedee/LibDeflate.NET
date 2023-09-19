@@ -51,7 +51,7 @@ public abstract class Compressor : IDisposable
                 return null;
             }
 
-            return output.Slice(0, (int)bytesWritten);
+            return output[..(int)bytesWritten];
         }
         catch
         {

@@ -41,7 +41,7 @@ public class CompressionTests
             Span<byte> outputBuffer = stackalloc byte[512];
             var numBytesCompressed = Imports.Compression.libdeflate_deflate_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
 
-            var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
+            var compressedBuffer = outputBuffer[..(int)numBytesCompressed];
             var actual = Encoding.UTF8.GetString(FlateToBuffer(compressedBuffer, CompressionMode.Decompress).Span);
             Assert.Equal(expected, actual);
         }
@@ -74,7 +74,7 @@ public class CompressionTests
             Span<byte> outputBuffer = stackalloc byte[512];
             var numBytesCompressed = Imports.Compression.libdeflate_zlib_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
 
-            var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
+            var compressedBuffer = outputBuffer[..(int)numBytesCompressed];
             var actual = Encoding.UTF8.GetString(ZlibToBuffer(compressedBuffer, CompressionMode.Decompress).Span);
             Assert.Equal(expected, actual);
         }
@@ -105,7 +105,7 @@ public class CompressionTests
             Span<byte> outputBuffer = stackalloc byte[512];
             var numBytesCompressed = Imports.Compression.libdeflate_gzip_compress(compressor, MemoryMarshal.GetReference(testBytes), (UIntPtr)testBytes.Length, ref MemoryMarshal.GetReference(outputBuffer), (UIntPtr)outputBuffer.Length);
 
-            var compressedBuffer = outputBuffer.Slice(0, (int)numBytesCompressed);
+            var compressedBuffer = outputBuffer[..(int)numBytesCompressed];
             var actual = Encoding.UTF8.GetString(GzipToBuffer(compressedBuffer, CompressionMode.Decompress).Span);
             Assert.Equal(expected, actual);
         }
