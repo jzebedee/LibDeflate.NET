@@ -4,11 +4,8 @@
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="xunit.runner.json" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="xunit.runner.json">
@@ -18,8 +15,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
-    <PackageReference Include="xunit" Version="2.5.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0">
+    <PackageReference Include="xunit" Version="2.5.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
