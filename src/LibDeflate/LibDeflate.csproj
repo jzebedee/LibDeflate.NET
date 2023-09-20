@@ -10,7 +10,7 @@
     <PackageTags>libdeflate.net libdeflate deflate zlib gzip gz crc32 crc adler32 adler</PackageTags>
     <Description>LibDeflate.NET is a managed wrapper around libdeflate, a native library for fast, whole-buffer DEFLATE-based compression and decompression.</Description>
 
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
 
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
