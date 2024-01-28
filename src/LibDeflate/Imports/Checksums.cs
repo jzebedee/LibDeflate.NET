@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace LibDeflate.Imports;
@@ -16,7 +15,7 @@ internal static partial class Checksums
     ///</summary>
     [LibraryImport(Constants.DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial UInt32 libdeflate_adler32(UInt32 adler, in byte buffer, size_t len);
+    public static partial uint libdeflate_adler32(uint adler, in byte buffer, size_t len);
 
     ///<summary>
     /// libdeflate_crc32() updates a running CRC-32 checksum with 'len' bytes of data
@@ -26,5 +25,5 @@ internal static partial class Checksums
     ///</summary>
     [LibraryImport(Constants.DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial UInt32 libdeflate_crc32(UInt32 crc, in byte buffer, size_t len);
+    public static partial uint libdeflate_crc32(uint crc, in byte buffer, size_t len);
 }

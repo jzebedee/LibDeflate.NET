@@ -3,8 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace LibDeflate.Imports;
 
-using libdeflate_decompressor = System.IntPtr;
-using size_t = System.UIntPtr;
+using libdeflate_decompressor = nint;
+using size_t = nuint;
 
 internal static partial class Decompression
 {
