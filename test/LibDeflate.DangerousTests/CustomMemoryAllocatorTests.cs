@@ -114,14 +114,14 @@ public class CustomMemoryAllocatorTests
         GC.KeepAlive(free);
     }
 
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static unsafe void* malloc_unsafe(nuint len)
     {
         mallocCount++;
         return NativeMemory.Alloc(len);
     }
 
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static unsafe void free_unsafe(void* alloc)
     {
         freeCount++;
