@@ -56,8 +56,9 @@ internal static partial class Decompression
     /// <summary>
     /// Like <see cref="libdeflate_alloc_decompressor"/> but allows specifying advanced options per-decompressor.
     /// </summary>
-    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
-    public static extern libdeflate_decompressor libdeflate_alloc_decompressor_ex(in libdeflate_options options);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial libdeflate_decompressor libdeflate_alloc_decompressor_ex(in libdeflate_options options);
 
     ///<summary>
     /// libdeflate_deflate_decompress() decompresses the DEFLATE-compressed stream

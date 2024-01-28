@@ -1,4 +1,5 @@
 ﻿using LibDeflate.Imports;
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Xunit;
@@ -60,22 +61,32 @@ public class CustomMemoryAllocatorTests
     }
 
     [Fact]
-    public void UsePerCompressorCustomAllocatorsTest()
+    public unsafe void UsePerCompressorCustomAllocatorsTest()
     {
         int startingGlobalMallocs = mallocCount;
         int startingGlobalFrees = freeCount;
 
         int localMallocs = 0;
         int localFrees = 0;
-        var options = new libdeflate_options((nuint len) =>
+
+        CustomMemoryAllocator.malloc_func malloc;
+        malloc = (nuint len) =>
         {
             localMallocs++;
             return Marshal.AllocHGlobal((nint)len);
-        }, (nint alloc) =>
+        };
+
+        CustomMemoryAllocator.free_func free;
+        free = (nint alloc) =>
         {
             localFrees++;
             Marshal.FreeHGlobal(alloc);
-        });
+        };
+
+        var options = new libdeflate_options(
+            (delegate* unmanaged[Cdecl]<nuint, void*>)Marshal.GetFunctionPointerForDelegate(malloc),
+            (delegate* unmanaged[Cdecl]<void*, void>)Marshal.GetFunctionPointerForDelegate(free)
+        );
 
         //test compressor
         {
@@ -98,6 +109,9 @@ public class CustomMemoryAllocatorTests
             Assert.Equal(2, localFrees);
             Assert.Equal(startingGlobalFrees, freeCount);
         }
+
+        GC.KeepAlive(malloc);
+        GC.KeepAlive(free);
     }
 
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]

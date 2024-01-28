@@ -4,14 +4,14 @@ using System.Runtime.InteropServices;
 
 namespace LibDeflate.Imports;
 
-using size_t = UIntPtr;
+using size_t = nuint;
 
 internal static partial class CustomMemoryAllocator
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate IntPtr malloc_func(size_t size);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void free_func(IntPtr alloc);
+    public delegate void free_func(nint alloc);
 
     ///<summary>
     /// Install a custom memory allocator which libdeflate will use for all memory

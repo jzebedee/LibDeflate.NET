@@ -1,10 +1,6 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-namespace LibDeflate.Imports;
+﻿namespace LibDeflate.Imports;
 
-using static LibDeflate.Imports.CustomMemoryAllocator;
-using size_t = UIntPtr;
+using size_t = nuint;
 
 /// <summary>
 /// Advanced options.  This is the options structure that
@@ -13,44 +9,14 @@ using size_t = UIntPtr;
 /// require.  Most users won't need this and should just use the non-"_ex"
 /// functions instead.
 /// </summary>
-internal readonly struct libdeflate_options
+internal readonly unsafe struct libdeflate_options(delegate* unmanaged[Cdecl]<nuint, void*> malloc, delegate* unmanaged[Cdecl]<void*, void> free)//(size_t sizeof_options, malloc_func malloc, free_func free)
 {
-    private static readonly size_t Size = (nuint)(nint)Unsafe.SizeOf<libdeflate_options>();
-
-    public libdeflate_options(malloc_func malloc, free_func free)
-    {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(malloc);
-        ArgumentNullException.ThrowIfNull(free);
-#else
-        ThrowIfNull(malloc);
-        ThrowIfNull(free);
-#endif
-
-        this.sizeof_options = Size;
-        this.malloc = malloc;
-        this.free = free;
-
-#if !NET6_0_OR_GREATER
-        static void ThrowIfNull([NotNull] object? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
-        {
-            if(argument is null)
-            {
-                ThrowHelperArgumentNull(paramName!);
-            }
-
-            [DoesNotReturn]
-            static void ThrowHelperArgumentNull(string paramName) => throw new ArgumentNullException(paramName);
-        }
-#endif
-    }
-
     /// <summary>
     ///  This field must be set to the struct size.  This field exists for
     ///  extensibility, so that fields can be appended to this struct in
     ///  future versions of libdeflate while still supporting old binaries.
     /// </summary>
-    public readonly size_t sizeof_options;
+    public readonly size_t sizeof_options = (size_t)sizeof(libdeflate_options);
 
     /// <summary>
     /// An optional custom memory allocator to use for this (de)compressor.
@@ -68,7 +34,7 @@ internal readonly struct libdeflate_options
     /// call the "global" memory allocator if a per-(de)compressor custom
     /// allocator is always given.
     /// </remarks>
-    public readonly malloc_func malloc;
+    public readonly delegate* unmanaged[Cdecl]<size_t, void*> malloc = malloc;
 
     /// <summary>
     /// An optional custom memory deallocator to use for this (de)compressor.
@@ -86,5 +52,5 @@ internal readonly struct libdeflate_options
     /// call the "global" memory allocator if a per-(de)compressor custom
     /// allocator is always given.
     /// </remarks>
-    public readonly free_func free;
+    public readonly delegate* unmanaged[Cdecl]<void*, void> free = free;
 }
