@@ -27,14 +27,14 @@ internal static partial class Compression
     /// However, different threads may use different compressors concurrently.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial libdeflate_compressor libdeflate_alloc_compressor(int compression_level);
 
     /// <summary>
     /// Like <see cref="libdeflate_alloc_compressor"/> but allows specifying advanced options per-compressor.
     /// </summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial libdeflate_compressor libdeflate_alloc_compressor_ex(int compression_level, in libdeflate_options options);
 
     ///<summary>
@@ -45,7 +45,7 @@ internal static partial class Compression
     /// could not be compressed to 'out_nbytes_avail' bytes or fewer.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial size_t libdeflate_deflate_compress(libdeflate_compressor compressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail);
 
     ///<summary>
@@ -74,7 +74,7 @@ internal static partial class Compression
     /// did not fit into the provided output buffer.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial size_t libdeflate_deflate_compress_bound(libdeflate_compressor compressor, size_t in_nbytes);
 
     ///<summary>
@@ -82,7 +82,7 @@ internal static partial class Compression
     /// format.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial size_t libdeflate_zlib_compress(libdeflate_compressor compressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail);
 
     ///<summary>
@@ -91,7 +91,7 @@ internal static partial class Compression
     /// libdeflate_deflate_compress().
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial size_t libdeflate_zlib_compress_bound(libdeflate_compressor compressor, size_t in_nbytes);
 
     ///<summary>
@@ -99,7 +99,7 @@ internal static partial class Compression
     /// format.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial size_t libdeflate_gzip_compress(libdeflate_compressor compressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail);
 
     ///<summary>
@@ -108,7 +108,7 @@ internal static partial class Compression
     /// libdeflate_deflate_compress().
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial size_t libdeflate_gzip_compress_bound(libdeflate_compressor compressor, size_t in_nbytes);
 
     ///<summary>
@@ -117,6 +117,6 @@ internal static partial class Compression
     /// taken.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void libdeflate_free_compressor(libdeflate_compressor compressor);
 }

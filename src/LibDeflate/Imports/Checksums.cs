@@ -15,7 +15,7 @@ internal static partial class Checksums
     /// 'buffer' is specified as NULL.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial UInt32 libdeflate_adler32(UInt32 adler, in byte buffer, size_t len);
 
     ///<summary>
@@ -25,6 +25,6 @@ internal static partial class Checksums
     /// specified as NULL.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial UInt32 libdeflate_crc32(UInt32 crc, in byte buffer, size_t len);
 }

@@ -50,14 +50,14 @@ internal static partial class Decompression
     /// However, different threads may use different decompressors concurrently.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial libdeflate_decompressor libdeflate_alloc_decompressor();
 
     /// <summary>
     /// Like <see cref="libdeflate_alloc_decompressor"/> but allows specifying advanced options per-decompressor.
     /// </summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial libdeflate_decompressor libdeflate_alloc_decompressor_ex(in libdeflate_options options);
 
     ///<summary>
@@ -93,7 +93,7 @@ internal static partial class Decompression
     ///     nonzero result code if decompression failed for another reason.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial libdeflate_result libdeflate_deflate_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -103,7 +103,7 @@ internal static partial class Decompression
     /// byte boundary) is written to *actual_in_nbytes_ret.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial libdeflate_result libdeflate_deflate_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -115,7 +115,7 @@ internal static partial class Decompression
     /// use libdeflate_zlib_decompress_ex().
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial libdeflate_result libdeflate_zlib_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -127,7 +127,7 @@ internal static partial class Decompression
     /// use libdeflate_zlib_decompress_ex().
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial libdeflate_result libdeflate_zlib_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -139,7 +139,7 @@ internal static partial class Decompression
     /// multi-member support.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial libdeflate_result libdeflate_gzip_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -150,7 +150,7 @@ internal static partial class Decompression
     /// written to *actual_in_nbytes_ret.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial libdeflate_result libdeflate_gzip_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
 
     ///<summary>
@@ -159,6 +159,6 @@ internal static partial class Decompression
     /// is taken.
     ///</summary>
     [LibraryImport(Constants.DllName)]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void libdeflate_free_decompressor(libdeflate_decompressor compressor);
 }
