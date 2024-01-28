@@ -9,7 +9,7 @@ public struct Crc32
 {
     private uint _currentCrc;
 
-    public uint Hash => _currentCrc;
+    public readonly uint Hash => _currentCrc;
 
     public void Append(ReadOnlySpan<byte> input)
         => _currentCrc = AppendCore(_currentCrc, input);

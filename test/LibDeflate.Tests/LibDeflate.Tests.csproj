@@ -4,7 +4,7 @@
   <!-- https://gist.github.com/jzebedee/d5e6c726692b83baf68fb5fc241c2929 -->
   
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net7.0</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>

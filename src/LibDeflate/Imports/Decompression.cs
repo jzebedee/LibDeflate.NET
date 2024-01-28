@@ -1,11 +1,12 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace LibDeflate.Imports;
 
-using libdeflate_decompressor = System.IntPtr;
-using size_t = System.UIntPtr;
+using libdeflate_decompressor = nint;
+using size_t = nuint;
 
-internal static class Decompression
+internal static partial class Decompression
 {
     ///<summary>
     /// Result of a call to libdeflate_deflate_decompress(),
@@ -48,14 +49,16 @@ internal static class Decompression
     /// A single decompressor is not safe to use by multiple threads concurrently.
     /// However, different threads may use different decompressors concurrently.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
-    public static extern libdeflate_decompressor libdeflate_alloc_decompressor();
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial libdeflate_decompressor libdeflate_alloc_decompressor();
 
     /// <summary>
     /// Like <see cref="libdeflate_alloc_decompressor"/> but allows specifying advanced options per-decompressor.
     /// </summary>
-    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
-    public static extern libdeflate_decompressor libdeflate_alloc_decompressor_ex(in libdeflate_options options);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial libdeflate_decompressor libdeflate_alloc_decompressor_ex(in libdeflate_options options);
 
     ///<summary>
     /// libdeflate_deflate_decompress() decompresses the DEFLATE-compressed stream
@@ -89,8 +92,9 @@ internal static class Decompression
     ///     not large enough but no other problems were encountered, or another
     ///     nonzero result code if decompression failed for another reason.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
-    public static extern libdeflate_result libdeflate_deflate_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial libdeflate_result libdeflate_deflate_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
 
     ///<summary>
     /// Like libdeflate_deflate_decompress(), but adds the 'actual_in_nbytes_ret'
@@ -98,8 +102,9 @@ internal static class Decompression
     /// then the actual compressed size of the DEFLATE stream (aligned to the next
     /// byte boundary) is written to *actual_in_nbytes_ret.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
-    public static extern libdeflate_result libdeflate_deflate_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial libdeflate_result libdeflate_deflate_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
 
     ///<summary>
     /// Like libdeflate_deflate_decompress(), but assumes the zlib wrapper format
@@ -109,8 +114,9 @@ internal static class Decompression
     /// than 'in_nbytes'.  If you need to know exactly where the zlib stream ended,
     /// use libdeflate_zlib_decompress_ex().
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
-    public static extern libdeflate_result libdeflate_zlib_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial libdeflate_result libdeflate_zlib_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
 
     ///<summary>
     /// Like libdeflate_deflate_decompress(), but assumes the zlib wrapper format
@@ -120,8 +126,9 @@ internal static class Decompression
     /// than 'in_nbytes'.  If you need to know exactly where the zlib stream ended,
     /// use libdeflate_zlib_decompress_ex().
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
-    public static extern libdeflate_result libdeflate_zlib_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial libdeflate_result libdeflate_zlib_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
 
     ///<summary>
     /// Like libdeflate_deflate_decompress(), but assumes the gzip wrapper format
@@ -131,8 +138,9 @@ internal static class Decompression
     /// will be decompressed.  Use libdeflate_gzip_decompress_ex() if you need
     /// multi-member support.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
-    public static extern libdeflate_result libdeflate_gzip_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial libdeflate_result libdeflate_gzip_decompress(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_out_nbytes_ret);
 
     ///<summary>
     /// Like libdeflate_gzip_decompress(), but adds the 'actual_in_nbytes_ret'
@@ -141,14 +149,16 @@ internal static class Decompression
     /// buffer was decompressed), then the actual number of input bytes consumed is
     /// written to *actual_in_nbytes_ret.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
-    public static extern libdeflate_result libdeflate_gzip_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial libdeflate_result libdeflate_gzip_decompress_ex(libdeflate_decompressor decompressor, in byte @in, size_t in_nbytes, ref byte @out, size_t out_nbytes_avail, out size_t actual_in_nbytes_ret, out size_t actual_out_nbytes_ret);
 
     ///<summary>
     /// libdeflate_free_decompressor() frees a decompressor that was allocated with
     /// libdeflate_alloc_decompressor().  If a NULL pointer is passed in, no action
     /// is taken.
     ///</summary>
-    [DllImport(Constants.DllName, CallingConvention = Constants.CallConv, ExactSpelling = true)]
-    public static extern void libdeflate_free_decompressor(libdeflate_decompressor decompressor);
+    [LibraryImport(Constants.DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void libdeflate_free_decompressor(libdeflate_decompressor compressor);
 }
